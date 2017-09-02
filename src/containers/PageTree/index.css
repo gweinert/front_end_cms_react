@@ -1,0 +1,16 @@
+.page-tree {
+	width: 30%;
+	/* height: 100%; */
+	height: calc(100vh - 53px);
+	border: 1px solid green;
+}
+
+.child-page-list {
+	height: 0;
+	overflow: hidden;
+}
+
+.child-page-list.active {
+	/* height: 30px; */
+	height: auto;
+}

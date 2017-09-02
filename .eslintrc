@@ -1,12 +1,17 @@
 {
     "parser": "babel-eslint",
     "plugins": ["react", "flowtype"],
-    "extends": ["airbnb", "plugin:flowtype/recommended"],
+    "extends": ["airbnb", "plugin:flowtype/recommended", "react-app"],
     "rules": {
         "react/jsx-filename-extension": 0,
         "import/prefer-default-export": 0,
         "react/no-unused-prop-types": 0,
-        "camelcase": 0
+        "camelcase": 0,
+        "react/jsx-indent": [2, "tab"],
+        "react/jsx-indent-props": [2, "tab"],
+        "indent": [2, "tab"],
+        "no-tabs": 0,
+        "jsx-a11y/href-no-hash": "off"
     },
     "globals": {
         "fetch": true,
