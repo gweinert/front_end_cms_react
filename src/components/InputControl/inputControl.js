@@ -24,12 +24,10 @@ function withInputControl(WrappedComponent) {
 		}
 
 		componentDidMount() {
-			console.log("withInputControl", this);
+			// console.log("inputControl", this.props);
 		}
 
 		onInputChange(e) {
-			console.log("e", e.target);
-			console.log("vale?", e.target.value);
 			this.setState({ value: e.target.value });
 		}
 

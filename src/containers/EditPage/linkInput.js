@@ -1,5 +1,7 @@
 import React, { Component } from 'react';
 import PropTypes			from 'prop-types';
+import withInputControl from '../../components/InputControl/inputControl';
+
 
 class LinkInput extends Component {
 	static propTypes = {
@@ -48,8 +50,8 @@ class LinkInput extends Component {
 		const {
 			label,
 			name,
-			linkPath,
-			linkText,
+			// linkPath,
+			// linkText,
 		} = this.props;
 
 		const labelValue = label || name;
@@ -78,4 +80,4 @@ class LinkInput extends Component {
 	}
 }
 
-export default LinkInput;
+export default withInputControl(LinkInput);

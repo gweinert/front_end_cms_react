@@ -16,7 +16,6 @@ export default function site(
 		error: null,
 	},
 	action) {
-		console.log(state, action);
 	switch (action.type) {
 	case REQUEST_USERS_SITE:
 		return { ...state, isFetching: true };
@@ -25,7 +24,10 @@ export default function site(
 	case RECEIVE_USERS_SITE_FAIL:
 		return { ...state, isFetching: false, error: action.payload };
 	case CREATE_NEW_LOCAL_PAGE_ELEMENT:
-		return addNewPageElement(state, action);
+		return {
+			...state,
+			data: addNewPageElement(state, action),
+		};
 	case REQUEST_CREATE_GROUP:
 		return { ...state, isPosting: true };
 	case CREATE_GROUP_SUCCESS:
@@ -77,31 +79,6 @@ function buildPageElements(oldElements, action) {
 	if (Array.isArray(action.pageElements)) {
 		return [...oldElements, ...action.pageElements];
 	}
-	return [...oldElements, action.pageElement];
+	return [...oldElements, action.pageElements];
 }
 
-// function buildPageElementsWithGroup(oldElements, action) {
-// 	const group = action.payload.data.structure;
-// 	const newGroupEls = group.map((el, index) => {
-// 		for (let i = 0; i < el.amount; i += 1) {
-// 			const groupSortOrder = index + i;
-// 			return buildGroupPageElement(el, action.payload.data.pageId, i, groupSortOrder);
-// 		}
-// 	});
-// 	return [...oldElements, ...newGroupEls];
-// }
-
-// function buildGroupPageElement(el, pageId, index, groupSortOrder) {
-// 	return {
-// 		pageId,
-// 		groupId: el.groupId,
-// 		sortOrder: 0,
-// 		groupSortOrder,
-// 		name: `${el.type}${index}`,
-// 		type: el.type,
-// 		body: '',
-// 		imageURL: '',
-// 		linkPath: '',
-// 		linkText: '',
-// 	};
-// }

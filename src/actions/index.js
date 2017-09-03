@@ -16,6 +16,7 @@ import {
 
 import {
 	createPageElementGroup,
+	createPageElementsForGroup,
 } from './group';
 
 export {
@@ -23,5 +24,6 @@ export {
 	setActivePage,
 	createPageElement,
 	createPageElementGroup,
+	createPageElementsForGroup,
 	updatePageSafely,
 };

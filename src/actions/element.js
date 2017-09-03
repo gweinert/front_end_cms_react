@@ -1,7 +1,7 @@
 import {
 	CREATE_NEW_LOCAL_PAGE_ELEMENT,
 } from './actionCreators';
-import { GET } from '../api/';
+// import { GET } from '../api/';
 
 
 function DefaultElement() {

@@ -6,19 +6,19 @@ import {
 } from './actionCreators';
 import { POST } from '../api/';
 
-function DefaultElement() {
+function DefaultElement(options = {}) {
 	return {
 		// "id": 0,
-		pageId: 0,
-		groupId: 0,
-		sortOrder: 0,
-		groupSortOrder: 0,
-		name: '',
-		type: '',
-		body: '',
-		imageURL: '',
-		linkPath: '',
-		linkText: '',
+		pageId: options.pageId || 0,
+		groupId: options.groupId || 0,
+		sortOrder: options.sortOrder || 0,
+		groupSortOrder: options.groupSortOrder || 0,
+		name: options.name || '',
+		type: options.type || '',
+		body: options.body || '',
+		imageURL: options.imageURL || '',
+		linkPath: options.linkPath || '',
+		linkText: options.linkText || '',
 	};
 }
 
@@ -28,9 +28,8 @@ function requestCreateGroup() {
 	};
 }
 
-// on success lets create page elements ourselves
+
 function createGroupSuccess(payload) {
-	// createLocalGroupElements(payload);
 	return {
 		type: CREATE_GROUP_SUCCESS,
 		payload,
@@ -48,6 +47,15 @@ function postGroup(group) {
 	const formData = JSON.stringify(group);
 
 	return POST('group/create', formData, requestCreateGroup, createGroupSuccess, createGroupFail);
+}
+
+// can dispatch as single or an array of page elements
+function createNewLocalPageElements(pageElements, pageId) {
+	return {
+		type: CREATE_NEW_LOCAL_PAGE_ELEMENT,
+		pageElements,
+		pageId,
+	};
 }
 
 function shouldCreateNewPageElementGroup(state) {
@@ -76,51 +84,42 @@ export function createPageElementGroup(groupFormState, activePage) {
 	};
 }
 
-function createLocalGroupElements(group) {
+export function createPageElementsForGroup(groupId, activePage) {
 	const pageElements = [];
+	const group = activePage.groups.find(groupItem => groupItem.id === parseInt(groupId, 10));
 
-	Object.keys(group.structure).map((groupType) => {
-		const numberOfElements = group[groupType];
-		for (let i = 0; i < numberOfElements; i += 1) {
-			const newPageElement = buildPageGroupElement(groupType, group.pageId, i);
-			pageElements.push(newPageElement);
+	if (group) {
+		group.structure.forEach((structureItem, index) => {
+			for (let i = 0; i < structureItem.amount; i += 1) {
+				const pageId = activePage.id;
+				const newPageGroupElement = buildPageGroupElement(structureItem, pageId, i);
+				pageElements.push(newPageGroupElement);
+			}
+		});
+	}
+
+	return (dispatch) => {
+		if (group) {
+			dispatch(createNewLocalPageElements(pageElements, group.pageId));
 		}
-	});
-
-	return dispatch => dispatch(createNewLocalPageElements(pageElements, group.pageId));
-}
-
-function buildPageGroupElement(type, pageId, index) {
-	const defaultElement = DefaultElement();
-	// const groupElements = activePage.elements.filter(el => el.groupId !== 0);
-	// const disinctGroups = uniq(groupElements);
-
-	defaultElement.pageId = pageId;
-	// defaultElement.sortOrder = activePage.elements.length;
-	defaultElement.type = type;
-
-	defaultElement.groupSortOrder = index;
-	// defaultElement.groupId = disinctGroups.length + 1;
-	defaultElement.name = `${type}${index + 1}`;
-
-	return defaultElement;
-}
-
-
-// can dispatch aa single or an array of page elements
-function createNewLocalPageElements(pageElements, pageId) {
-	return {
-		type: CREATE_NEW_LOCAL_PAGE_ELEMENT,
-		pageElements,
-		pageId,
 	};
 }
 
-// used to serialize the group id
-// function uniq(a) {
-// 	const seen = {};
-// 	return a.filter(item => {
-// 		console.log("item", item);
-// 		return seen.hasOwnProperty(item.id) ? false : (seen[item.id] = true)
-// 	});
-// }
+function buildPageGroupElement(structureItem, pageId, index) {
+	const {
+		type,
+		amount,
+		groupId,
+	} = structureItem;
+	const groupSortOrder = index + amount;
+
+	const defaultElement = DefaultElement({
+		pageId,
+		groupId,
+		type,
+		groupSortOrder,
+		name: `${type}${index}`,
+	});
+
+	return defaultElement;
+}

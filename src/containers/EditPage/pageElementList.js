@@ -5,17 +5,23 @@ const PageElementList = ({ elements, elementMap }) => (
 	<div>
 		{elements.map((el, index) => {
 			const InputComponent = elementMap[el.type.toLowerCase()];
-
 			return (
-				InputComponent ? <InputComponent key={el.id} {...el} /> : null
+				InputComponent ?
+					<InputComponent
+						key={el.id}
+						{...el}
+					/>
+					: null
 			);
 		})}
 	</div>
 );
 
+
 PageElementList.propTypes = {
 	elements: PropTypes.arrayOf(PropTypes.object),
 	elementMap: PropTypes.object,
+	onInputChange: PropTypes.func,
 };
 
 PageElementList.defaultProps = {

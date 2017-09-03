@@ -28,7 +28,6 @@ class ContextMenuListItem extends Component {
 
 	render() {
 		const {
-			subMenu,
 			menuKey,
 			children,
 		} = this.props;

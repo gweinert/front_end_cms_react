@@ -41,13 +41,19 @@ class PageForm extends Component {
 
 	onSubmit(e) {
 		e.preventDefault();
-		const updatedPageElements = this.buildPageElements();
-		const updatedPage = this.buildPage(updatedPageElements);
 
-		this.props.onSubmit(updatedPage);
+		// avoid submitting on clicking any 'button' type in form
+		if (e.target.getAttribute('type') === 'submit') {
+			const updatedPageElements = this.buildPageElements();
+			const updatedPage = this.buildPage(updatedPageElements);
+			console.log("updatePage", updatedPage);
+
+			// this.props.onSubmit(updatedPage);
+		}
 	}
 
 	buildPageElements() {
+		console.log("input refs", this.inputRefs);
 		const updatedPageElements = Object.keys(this.inputRefs).map((inputElKey) => {
 			const inputEl = this.inputRefs[inputElKey];
 			const pageElObject = inputEl.props;
@@ -121,18 +127,25 @@ class PageForm extends Component {
 				</div>
 
 				{children.map((child) => {
-					if (typeof child.type === 'function' && child.props.name) { // if its a page element
+					if (typeof child.type === 'function') { // if its a page element
 						return React.cloneElement(
 							child,
 							{ ...child.props,
-								ref: (ref) => { this.inputRefs[child.props.name] = ref; },
+								elements: child.props.elements.map((el) => {
+									const inputRefKey = `${el.name}_${el.id}`;
+									return { ...el, ref: (ref) => { this.inputRefs[inputRefKey] = ref; } }
+								}),
 							},
 						);
 					}
 
 					return child;
 				})}
-				<input type="submit" value="Submit" />
+				<input
+					onClick={this.onSubmit}
+					type="submit"
+					value="Submit"
+				/>
 			</form>
 		);
 	}

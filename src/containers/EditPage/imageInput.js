@@ -1,5 +1,7 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
+import withInputControl from '../../components/InputControl/inputControl';
+
 
 class ImageInput extends Component {
 	static propTypes = {
@@ -47,4 +49,4 @@ class ImageInput extends Component {
 	}
 }
 
-export default ImageInput;
+export default withInputControl(ImageInput);

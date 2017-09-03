@@ -15,6 +15,7 @@ import {
 	createPageElement,
 	createPageElementGroup,
 	updatePageSafely,
+	createPageElementsForGroup,
 } 							from '../../actions/';
 
 const PAGE_ELEMENT_TYPES = [
@@ -22,7 +23,8 @@ const PAGE_ELEMENT_TYPES = [
 	'Blurb',
 	'Image',
 	'Link',
-]
+];
+
 const contextMenuOptions = {
 	menu: {
 		'Add New Element': PAGE_ELEMENT_TYPES,
@@ -61,6 +63,7 @@ class EditPage extends Component {
 		this.onPageFormSubmit = this.onPageFormSubmit.bind(this);
 		this.onContextMenuClick = this.onContextMenuClick.bind(this);
 		this.onGroupFormSubmit = this.onGroupFormSubmit.bind(this);
+		this.handleNewGroupItem = this.handleNewGroupItem.bind(this);
 		this.toggleModal = this.toggleModal.bind(this);
 	}
 
@@ -96,6 +99,12 @@ class EditPage extends Component {
 		this.createNewPageGroup(group);
 	}
 
+	handleNewGroupItem(groupId) {
+		const { dispatch, activePage } = this.props;
+
+		dispatch(createPageElementsForGroup(groupId, activePage));
+	}
+
 	showNewGroupForm() {
 		this.setState({
 			showModal: true,
@@ -109,13 +118,14 @@ class EditPage extends Component {
 
 	createNewPageElement(newElementType) {
 		const { dispatch, activePage } = this.props;
-		if (pageElementComponentMap[newElementType.toLowerCase()]) {
-			dispatch(createPageElement(newElementType, activePage));
+		const type = newElementType.toLowerCase();
+
+		if (pageElementComponentMap[type.toLowerCase()]) {
+			dispatch(createPageElement(type, activePage));
 		}
 	}
 
 	createNewPageGroup(groupFormState) {
-		console.log("groupFOrmState", groupFormState);
 		const { dispatch, activePage } = this.props;
 		if (Object.keys(groupFormState).length) {
 			dispatch(createPageElementGroup(groupFormState, activePage));
@@ -125,12 +135,11 @@ class EditPage extends Component {
 	render() {
 		const { activePage } = this.props;
 		const { showModal, showNewGroupForm } = this.state;
-		const groupElStyle = {
-			display: 'inline-block',
-		};
-		
+
 		if (activePage) {
-			const normalPageElements = activePage.elements.length ? activePage.elements.filter(el => el.groupId === 0) : [];
+			const normalPageElements = activePage.elements.length ?
+				activePage.elements.filter(el => el.groupId === 0) : [];
+			console.log("activePage", activePage);
 			return (
 				<div>
 					<h1>{activePage.title}</h1>
@@ -147,6 +156,7 @@ class EditPage extends Component {
 						<PageGroupElementList
 							elements={activePage.elements}
 							elementMap={pageElementComponentMap}
+							onAddNewGroupItem={this.handleNewGroupItem}
 						/>
 					</PageForm>
 					<button

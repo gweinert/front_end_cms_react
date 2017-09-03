@@ -1,39 +1,61 @@
-import React from 'react';
+import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import PageElementList from './pageElementList';
 
-const PageGroupElementList = ({ elements, elementMap }) => {
-	const groupedElements = elements.filter(el => el.groupId !== 0)
-		.reduce((accum, cur) => {
-			(accum[cur.groupId] = accum[cur.groupId] || []).push(cur);
-			return accum;
-		}, {});
+// const PageGroupElementList = ({ elements, elementMap, onAddNewGroupItem }) => {
+class PageGroupElementList extends Component {
+	static propTypes = {
+		elements: PropTypes.arrayOf(PropTypes.object),
+		elementMap: PropTypes.object,
+		onAddNewGroupItem: PropTypes.func,
+		// onInputChange: PropTypes.func,
+	};
 
-	if (Object.keys(groupedElements).length) {
-		return (
-			<div>
-				{Object.keys(groupedElements).map((groupKey, index) => (
-					<div className="group" key={groupKey}>
-						<PageElementList
-							elements={groupedElements[groupKey]}
-							elementMap={elementMap}
-						/>
-					</div>
-				))}
-			</div>
-		);
+	static defaultProps = {
+		elements: [],
+		onAddNewGroupItem: () => {},
+	};
+
+	constructor(props) {
+		super(props);
+		this.onAddNewGroupItem = this.onAddNewGroupItem.bind(this);
 	}
 
-	return null;
-};
+	onAddNewGroupItem(groupId) {
+		const { onAddNewGroupItem } = this.props;
+		onAddNewGroupItem(groupId);
+	}
 
-PageGroupElementList.propTypes = {
-	elements: PropTypes.arrayOf(PropTypes.object),
-	elementMap: PropTypes.object,
-};
+	render() {
+		const {
+			elements,
+			elementMap,
+		} = this.props;
 
-PageGroupElementList.defaultProps = {
-	elements: [],
-};
+		const groupedElements = elements.filter(el => el.groupId !== 0)
+			.reduce((accum, cur) => {
+				(accum[cur.groupId] = accum[cur.groupId] || []).push(cur);
+				return accum;
+			}, {});
+
+		if (Object.keys(groupedElements).length) {
+			return (
+				<div>
+					{Object.keys(groupedElements).map((groupKey, index) => (
+						<div className="group" key={groupKey}>
+							<PageElementList
+								elements={groupedElements[groupKey]}
+								elementMap={elementMap}
+							/>
+							<button onClick={() => this.onAddNewGroupItem(groupKey)}>Add New Slide</button>
+						</div>
+					))}
+				</div>
+			);
+		}
+
+		return null;
+	}
+}
 
 export default PageGroupElementList;
