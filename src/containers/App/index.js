@@ -43,7 +43,10 @@ class App extends Component {
 			<div className="App">
 				<NavBar />
 				<div className="main-app">
-					<PageTree pages={pages} />
+					<PageTree
+						pages={pages}
+						activePage={activePage}
+					/>
 					<Route
 						exact
 						path="/"

@@ -111,7 +111,8 @@ function buildPageGroupElement(structureItem, pageId, index) {
 		amount,
 		groupId,
 	} = structureItem;
-	const groupSortOrder = index + amount;
+	// const groupSortOrder = index + amount;
+	const groupSortOrder = amount;
 
 	const defaultElement = DefaultElement({
 		pageId,

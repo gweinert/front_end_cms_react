@@ -18,6 +18,9 @@ class Blurb extends Component {
 		name: PropTypes.string,
 		body: PropTypes.string,
 		value: PropTypes.string,
+		id: PropTypes.number,
+		type: PropTypes.string,
+		className: PropTypes.string,
 		onInputChange: PropTypes.func,
 	}
 
@@ -26,6 +29,9 @@ class Blurb extends Component {
 		name: '',
 		body: '',
 		value: '',
+		id: 0,
+		type: '',
+		className: '',
 		onInputChange: () => {},
 	}
 
@@ -60,17 +66,20 @@ class Blurb extends Component {
 			name,
 			body,
 			value,
+			id,
+			type,
+			className,
 			// onInputChange,
 		} = this.props;
 
 		const inputValue = value || body;
 		const labelValue = label || name;
 		const { editorState } = this.state;
+		const uniqueId = `${type}_${id}`;
 		return (
-			<div>
+			<div id={uniqueId} className={className}>
 				<label htmlFor="blurb">{labelValue}
 					<Editor
-						id="blurb"
 						editorState={editorState}
 						toolbarClassName="toolbarClassName"
 						wrapperClassName="wrapperClassName"

@@ -8,6 +8,8 @@ class Title extends Component {
 		name: PropTypes.string,
 		body: PropTypes.string,
 		value: PropTypes.string,
+		id: PropTypes.string,
+		className: PropTypes.string,
 		onInputChange: PropTypes.func.isRequired,
 	}
 
@@ -16,6 +18,8 @@ class Title extends Component {
 		name: '',
 		body: '',
 		value: '',
+		id: '0',
+		className: '',
 	}
 
 	render() {
@@ -24,16 +28,18 @@ class Title extends Component {
 			name,
 			body,
 			value,
+			id,
+			className,
 		} = this.props;
 
 		const valInput = value || body;
 		const labelValue = label || name;
 
 		return (
-			<div>
+			<div id={id} className={className}>
 				<label htmlFor="Title">{labelValue}
 					<input
-						id="Title"
+						id={`${id}_input`}
 						value={valInput}
 						onChange={this.props.onInputChange}
 					/>

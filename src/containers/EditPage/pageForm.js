@@ -48,7 +48,7 @@ class PageForm extends Component {
 			const updatedPage = this.buildPage(updatedPageElements);
 			console.log("updatePage", updatedPage);
 
-			// this.props.onSubmit(updatedPage);
+			this.props.onSubmit(updatedPage);
 		}
 	}
 
@@ -133,7 +133,7 @@ class PageForm extends Component {
 							{ ...child.props,
 								elements: child.props.elements.map((el) => {
 									const inputRefKey = `${el.name}_${el.id}`;
-									return { ...el, ref: (ref) => { this.inputRefs[inputRefKey] = ref; } }
+									return { ...el, ref: (ref) => { this.inputRefs[inputRefKey] = ref; } };
 								}),
 							},
 						);

@@ -1,7 +1,10 @@
 import {
 	CREATE_NEW_LOCAL_PAGE_ELEMENT,
+	REQUEST_DELETE_PAGE_ELEMENT,
+	DELETE_PAGE_ELEMENT_SUCCESS,
+	DELETE_PAGE_ELEMENT_FAIL,
 } from './actionCreators';
-// import { GET } from '../api/';
+import { POST } from '../api/';
 
 
 function DefaultElement() {
@@ -52,4 +55,45 @@ function createNewLocalPageElements(pageElements, pageId) {
 export function createPageElement(pageElementType, activePage) {
 	const pageElement = buildPageElement(pageElementType, activePage);
 	return dispatch => dispatch(createNewLocalPageElements(pageElement, activePage.id));
+}
+
+function requestDeletePageElement() {
+	return {
+		type: REQUEST_DELETE_PAGE_ELEMENT,
+	};
+}
+
+function deletePageElementSuccess(payload) {
+	return {
+		type: DELETE_PAGE_ELEMENT_SUCCESS,
+		payload,
+	};
+}
+
+function deletePageElementFail() {
+	return {
+		type: DELETE_PAGE_ELEMENT_FAIL,
+	};
+}
+
+function deletePageElement(id) {
+	const formData = JSON.stringify({ id });
+	return POST('element/delete', formData, requestDeletePageElement, deletePageElementSuccess, deletePageElementFail);
+}
+
+
+function shouldDeletePageElement(state) {
+	if (state.site.isDeleting) {
+		return false;
+	}
+
+	return true;
+}
+
+export function deletePageElementWithId(id) {
+	return (dispatch, getState) => {
+		if (shouldDeletePageElement(getState())) {
+			return dispatch(deletePageElement(id));
+		}
+	}
 }

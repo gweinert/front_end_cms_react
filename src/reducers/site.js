@@ -6,12 +6,22 @@ import {
 	REQUEST_CREATE_GROUP,
 	CREATE_GROUP_SUCCESS,
 	CREATE_GROUP_FAIL,
+	REQUEST_DELETE_PAGE_ELEMENT,
+	DELETE_PAGE_ELEMENT_SUCCESS,
+	DELETE_PAGE_ELEMENT_FAIL,
+	REQUEST_NEW_PAGE,
+	CREATE_NEW_PAGE_SUCCESS,
+	CREATE_NEW_PAGE_FAIL,
+	REQUEST_DELETE_PAGE,
+	DELETE_PAGE_SUCCESS,
+	DELETE_PAGE_FAIL,
 } from '../actions/actionCreators';
 
 export default function site(
 	state = {
 		isFetching: false,
 		isPosting: false,
+		isDeleting: false,
 		data: null,
 		error: null,
 	},
@@ -38,8 +48,39 @@ export default function site(
 		};
 	case CREATE_GROUP_FAIL:
 		return { ...state, isPosting: false };
+	case REQUEST_DELETE_PAGE_ELEMENT:
+		return { ...state, isDeleting: true };
+	case DELETE_PAGE_ELEMENT_SUCCESS:
+		return { 
+			...state,
+			isDeleting: true,
+			data: removePageElement(state.data, action),
+		};
+	case DELETE_PAGE_ELEMENT_FAIL:
+		return { ...state, isDeleting: false };
+	case REQUEST_NEW_PAGE:
+		return { ...state, isPosting: true };
+	case CREATE_NEW_PAGE_SUCCESS:
+		return {
+			...state,
+			isPosting: false,
+			data: addPage(state.data, action),
+		};
+	case CREATE_NEW_PAGE_FAIL:
+		return { ...state, isPosting: false };
+	case REQUEST_DELETE_PAGE:
+		return { ...state, isDeleting: true };
+	case DELETE_PAGE_SUCCESS:
+		return {
+			...state,
+			isDeleting: false,
+			data: { ...state.data, pages: state.data.pages.filter(page => page.id !== action.payload.id) },
+		};
+	case DELETE_PAGE_FAIL:
+		return { ...state, isDeleting: false };
 	default: return state;
 	}
+
 }
 
 function addNewPageElement(state, action, options = {}) {
@@ -80,5 +121,39 @@ function buildPageElements(oldElements, action) {
 		return [...oldElements, ...action.pageElements];
 	}
 	return [...oldElements, action.pageElements];
+}
+
+function removePageElement(state, action) {
+	const { id, pageId } = action.payload;
+
+	return {
+		...state,
+		pages: state.pages.map(page => (
+			page.id === pageId ?
+				{
+					...page,
+					elements: page.elements.filter(el => el.id !== id),
+				}
+				:
+				page
+		)),
+	};
+}
+
+function addPage(state, action) {
+	const { data } = action.payload;
+
+	// add elements and groups array if null
+	if (!data.elements) {
+		data.elements = [];
+	}
+	if (!data.groups) {
+		data.groups = [];
+	}
+
+	return {
+		...state,
+		pages: [...state.pages, data],
+	};
 }
 

@@ -4,10 +4,13 @@ import {
 
 import {
 	setActivePage,
+	createNewPageSafely,
+	deletePageSafely,
 } from './page';
 
 import {
 	createPageElement,
+	deletePageElementWithId,
 } from './element';
 
 import {
@@ -22,7 +25,10 @@ import {
 export {
 	fetchUsersSiteIfNeeded,
 	setActivePage,
+	createNewPageSafely,
+	deletePageSafely,
 	createPageElement,
+	deletePageElementWithId,
 	createPageElementGroup,
 	createPageElementsForGroup,
 	updatePageSafely,

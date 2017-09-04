@@ -9,6 +9,8 @@ class ImageInput extends Component {
 		name: PropTypes.string,
 		imageURL: PropTypes.string,
 		value: PropTypes.string,
+		id: PropTypes.string,
+		className: PropTypes.string,
 		onInputChange: PropTypes.func.isRequired,
 	}
 
@@ -17,6 +19,8 @@ class ImageInput extends Component {
 		name: '',
 		imageURL: '',
 		value: '',
+		id: '0',
+		className: '',
 	}
 
 	render() {
@@ -25,6 +29,8 @@ class ImageInput extends Component {
 			name,
 			imageURL,
 			value,
+			id,
+			className,
 			onInputChange,
 		} = this.props;
 
@@ -35,9 +41,10 @@ class ImageInput extends Component {
 		}
 
 		return (
-			<div>
+			<div id={id} className={className}>
 				<label htmlFor="file">{labelValue}
 					<input
+						id={`${id}_file`}
 						type="file"
 						accept="image/*"
 						value={value}

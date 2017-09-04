@@ -10,19 +10,22 @@ import withContextMenu 		from '../../components/ContextMenu/contextMenu';
 import PageForm 			from './pageForm';
 import NewGroupForm 		from './newGroupForm';
 import PageElementList 		from './pageElementList';
-import PageGroupElementList from './pageGroupElementList';
+import PageGroupList 		from './pageGroupList';
 import {
 	createPageElement,
 	createPageElementGroup,
 	updatePageSafely,
 	createPageElementsForGroup,
+	// deletePageElementsForGroup,
+	deletePageElementWithId,
+	deletePageSafely,
 } 							from '../../actions/';
 
 const PAGE_ELEMENT_TYPES = [
-	'Title',
-	'Blurb',
-	'Image',
-	'Link',
+	'title',
+	'blurb',
+	'image',
+	'link',
 ];
 
 const contextMenuOptions = {
@@ -30,6 +33,7 @@ const contextMenuOptions = {
 		'Add New Element': PAGE_ELEMENT_TYPES,
 		'Save As Template': [],
 		'Add New Group': [],
+		'Delete Page Element': [],
 	},
 };
 
@@ -64,7 +68,9 @@ class EditPage extends Component {
 		this.onContextMenuClick = this.onContextMenuClick.bind(this);
 		this.onGroupFormSubmit = this.onGroupFormSubmit.bind(this);
 		this.handleNewGroupItem = this.handleNewGroupItem.bind(this);
+		this.handleDeleteGroupItem = this.handleDeleteGroupItem.bind(this);
 		this.toggleModal = this.toggleModal.bind(this);
+		this.onDeletePageClick = this.onDeletePageClick.bind(this);
 	}
 
 	// componentWillReceiveProps(nextProps) {
@@ -80,10 +86,13 @@ class EditPage extends Component {
 	// 	}
 	// }
 
-	onContextMenuClick(contextMenuListItem) {
+	onContextMenuClick(contextMenuListItem, eventTarget) {
 		switch (contextMenuListItem.toLowerCase()) {
 		case 'add new group':
 			this.showNewGroupForm();
+			break;
+		case 'delete page element':
+			this.deletePageElement(eventTarget);
 			break;
 		default: this.createNewPageElement(contextMenuListItem);
 		}
@@ -99,18 +108,66 @@ class EditPage extends Component {
 		this.createNewPageGroup(group);
 	}
 
+	onDeletePageClick() {
+		const { dispatch, activePage } = this.props;
+
+		if (activePage.id) {
+			dispatch(deletePageSafely(activePage.id));
+		}
+	}
+
+	showNewGroupForm() {
+		this.setState({
+			showModal: true,
+		});
+	}
+
+	deletePageElement(targetNode) {
+		const { dispatch } = this.props;
+		console.log("delete page element", targetNode);
+		let validNodeElement = targetNode.className.includes('input-control') && targetNode;
+		let elementToDeleteId;
+
+		function getElementToDeleteId(targetNodeElement) {
+			const targetNodeIdType = targetNode.id.split('_')[0];
+			console.log("targernode type", targetNodeIdType);
+			const validElement = PAGE_ELEMENT_TYPES.indexOf(targetNodeIdType) > -1;
+			console.log("valid EL", validElement);
+			
+			if (validElement) {
+				const targetNodeId = targetNode.id.split('_')[1];
+				return targetNodeId;
+			}
+
+			return false;
+		}
+
+		// find the input element with the id
+		if (validNodeElement) {
+			elementToDeleteId = getElementToDeleteId(validNodeElement);
+		} else {
+			validNodeElement = findAncestor(targetNode, 'input-control');
+			if (validNodeElement) {
+				elementToDeleteId = getElementToDeleteId(validNodeElement);
+			}
+		}
+		console.log("validNodeElement", validNodeElement, elementToDeleteId);
+		if (elementToDeleteId) {
+			dispatch(deletePageElementWithId(elementToDeleteId));
+		}
+	}
+
 	handleNewGroupItem(groupId) {
 		const { dispatch, activePage } = this.props;
 
 		dispatch(createPageElementsForGroup(groupId, activePage));
 	}
 
-	showNewGroupForm() {
-		this.setState({
-			showModal: true,
-			showNewGroupForm: true,
-		});
+	handleDeleteGroupItem(groupId) {
+		const { dispatch } = this.props;
+		// dispatch(deletePageElementsForGroup(groupId));
 	}
+
 
 	toggleModal() {
 		this.setState({ showModal: !this.state.showModal });
@@ -153,10 +210,12 @@ class EditPage extends Component {
 							elements={normalPageElements}
 							elementMap={pageElementComponentMap}
 						/>
-						<PageGroupElementList
+						<PageGroupList
+							groups={activePage.groups}
 							elements={activePage.elements}
 							elementMap={pageElementComponentMap}
 							onAddNewGroupItem={this.handleNewGroupItem}
+							onDeleteGroupItem={this.handleDeleteGroupItem}
 						/>
 					</PageForm>
 					<button
@@ -164,16 +223,20 @@ class EditPage extends Component {
 					>
 						Add New Element
 					</button>
+					<button
+						onClick={this.onDeletePageClick}
+					>
+						DELETE PAGE
+					</button>
 					<Modal
 						show={showModal}
 						onCloseClick={this.toggleModal}
 					>
-						{showNewGroupForm &&
-							<NewGroupForm
-								options={PAGE_ELEMENT_TYPES}
-								onSubmit={this.onGroupFormSubmit}
-							/>
-						}
+						<NewGroupForm
+							options={PAGE_ELEMENT_TYPES}
+							onSubmit={this.onGroupFormSubmit}
+						/>
+
 					</Modal>
 				</div>
 			);
@@ -192,3 +255,9 @@ const mapStateToProps = (state) => {
 };
 
 export default connect(mapStateToProps)(withContextMenu(EditPage, contextMenuOptions));
+
+
+function findAncestor (el, cls) {
+	while ((el = el.parentElement) && !el.classList.contains(cls));
+	return el;
+}

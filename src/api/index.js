@@ -31,6 +31,7 @@ export function POST(url, formData, requestDispatch, successDispatch, errorDispa
 				body: formData,
 			})
 			.then((res) => {
+				console.log("res", res);
 				if (res.ok) return res.json();
 				throw new TypeError('Oops, probably a 404!');
 			})

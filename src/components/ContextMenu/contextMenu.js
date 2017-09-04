@@ -12,6 +12,7 @@ function withContextMenu(WrappedComponent, contextMenuOptions) {
 				mousePosition: {
 					x: 0,
 					y: 0,
+					target: null,
 				},
 			};
 			this.onContextMenu = this.onContextMenu.bind(this);
@@ -33,12 +34,12 @@ function withContextMenu(WrappedComponent, contextMenuOptions) {
 
 		onContextMenu(e) {
 			e.preventDefault();
-			// console.log('onContextClick', e);
 			this.showContextMenu(e);
 		}
 
 		onContextMenuItemClick(item) {
-			this.wc.onContextMenuClick(item);
+			const { target } = this.state;
+			this.wc.onContextMenuClick(item, target);
 		}
 
 		showContextMenu(e) {
@@ -48,6 +49,7 @@ function withContextMenu(WrappedComponent, contextMenuOptions) {
 					x: e.x,
 					y: e.y,
 				},
+				target: e.target,
 			});
 		}
 

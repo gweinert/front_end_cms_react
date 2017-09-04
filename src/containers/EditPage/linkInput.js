@@ -9,6 +9,8 @@ class LinkInput extends Component {
 		name: PropTypes.string,
 		linkPath: PropTypes.string,
 		linkText: PropTypes.string,
+		id: PropTypes.string,
+		className: PropTypes.string,
 		onInputChange: PropTypes.func.isRequired,
 	}
 
@@ -17,6 +19,8 @@ class LinkInput extends Component {
 		name: '',
 		linkPath: '',
 		linkText: '',
+		id: '0',
+		className: '',
 	}
 
 	constructor(props) {
@@ -50,6 +54,8 @@ class LinkInput extends Component {
 		const {
 			label,
 			name,
+			id,
+			className,
 			// linkPath,
 			// linkText,
 		} = this.props;
@@ -57,11 +63,12 @@ class LinkInput extends Component {
 		const labelValue = label || name;
 
 		return (
-			<div>
+			<div id={id} className={className}>
 				<p>{labelValue}</p>
 				<div>
 					<label htmlFor="linkPath"><span>Path: </span>
 						<input
+							id={`${id}_path`}
 							onChange={this.onChangeLinkPathInput}
 							value={this.state.linkPath}
 						/>
@@ -70,6 +77,7 @@ class LinkInput extends Component {
 				<div>
 					<label htmlFor="linkText"><span>Text: </span>
 						<input
+							id={`${id}_text`}
 							onChange={this.onChangeLinkTextInput}
 							value={this.state.linkText}
 						/>

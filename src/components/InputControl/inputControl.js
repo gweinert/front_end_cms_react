@@ -6,11 +6,14 @@ function withInputControl(WrappedComponent) {
 		static propTypes = {
 			type: PropTypes.string,
 			name: PropTypes.string,
+			id: PropTypes.number,
+			
 		}
 
 		static defaultProps = {
 			type: '',
 			name: '',
+			id: 0,
 		}
 
 		constructor(props) {
@@ -44,11 +47,15 @@ function withInputControl(WrappedComponent) {
 
 
 		render() {
+			const { type, id } = this.props;
+			const uniqueId = `${type}_${id}`;
 			return (
 				<WrappedComponent
 					{...this.props}
 					onInputChange={this.onInputChange}
 					value={this.state.value}
+					className="input-control"
+					id={uniqueId}
 				/>
 			);
 		}
