@@ -15,7 +15,12 @@ import {
 	REQUEST_DELETE_PAGE,
 	DELETE_PAGE_SUCCESS,
 	DELETE_PAGE_FAIL,
+	RECEIVE_FORM_ELEMENTS,
+	LOAD,
+	UPDATE_LOCAL_PAGE_ELEMENT_GROUP,
 } from '../actions/actionCreators';
+
+// const LOAD = 'redux-form-examples/account/LOAD';
 
 export default function site(
 	state = {
@@ -24,6 +29,8 @@ export default function site(
 		isDeleting: false,
 		data: null,
 		error: null,
+		// formReduxdata: null,
+		// formData: null,
 	},
 	action) {
 	switch (action.type) {
@@ -74,14 +81,76 @@ export default function site(
 		return {
 			...state,
 			isDeleting: false,
-			data: { ...state.data, pages: state.data.pages.filter(page => page.id !== action.payload.id) },
+			data: {
+				...state.data,
+				pages: state.data.pages.filter(page => page.id !== action.payload.id) },
 		};
 	case DELETE_PAGE_FAIL:
 		return { ...state, isDeleting: false };
+	case UPDATE_LOCAL_PAGE_ELEMENT_GROUP:
+		return {
+			...state,
+			data: {
+				...state.data,
+				pages: state.data.pages.map(page => (
+					page.id === action.pageId ?
+						{
+							...page,
+							elementsGroups: {
+								...page.elementsGroups,
+								[action.groupId]: page.elementsGroups[action.groupId].map((el, index) => {
+									el[action[slide[index][propValue]]] = action[slide[index][value]]
+									return el;
+								})
+							}
+						}
+						:
+						page
+				)),
+			},
+		}
 	default: return state;
 	}
-
 }
+
+
+// function buildGroups(payload) {
+// 	const { elements, groups } = payload;
+// 	let slideGroup = [];
+
+// 	const groupedElements = elements.filter(el => el.groupId !== 0)
+// 		.reduce((accum, cur) => {
+// 			(accum[cur.groupId] = accum[cur.groupId] || []).push(cur);
+// 			return accum;
+// 		}, {});
+
+// 	Object.keys(groupedElements).forEach((key) => {
+// 		const ge = groupedElements[key];
+// 		const currentGroup = groups.find(groupItem => groupItem.id === parseInt(key, 10));
+// 		const elementsPerSlide = currentGroup.structure
+// 			.reduce((accum, item) => (
+// 				accum.amount ? accum.amount + item.amount : accum + item.amount
+// 			), 0);
+
+// 		let slide = [];
+// 		ge.forEach((el, index) => {
+// 			const slideNum = Math.floor(index / elementsPerSlide);
+// 			const nextSlide = Math.floor((index + 1) / elementsPerSlide) > slideNum;
+
+// 			slide.push(el);
+
+// 			if (nextSlide) {
+// 				slideGroup.push(slide);
+// 				slide = [];
+// 			}
+// 		});
+
+// 		groupedElements[key] = slideGroup;
+// 		slideGroup = [];
+// 	});
+
+// 	return groupedElements;
+// }
 
 function addNewPageElement(state, action, options = {}) {
 	// const buildPageElFunc = options.group ? buildPageElementsWithGroup : buildPageElements;

@@ -1,0 +1,11 @@
+.slide{
+	border: 1px solid green;
+}
+
+.slide .edit {
+	display: none;
+}
+
+.slide.show-edit .edit{
+	display: block;
+}

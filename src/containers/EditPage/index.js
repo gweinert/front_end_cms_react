@@ -2,23 +2,29 @@ import React, { Component } from 'react';
 import PropTypes 			from 'prop-types';
 import { connect }			from 'react-redux';
 import Modal				from '../../components/Modal/modal';
-import Title 				from './title';
-import Blurb 				from './blurb';
-import ImageInput 			from './imageInput';
-import LinkInput 			from './linkInput';
+import Title 				from '../../components/InputControl/title';
+import TitleRedux 				from '../../components/ReduxFields/title';
+import Blurb 				from '../../components/ReduxFields/blurb';
+
+// import Blurb 				from '../../components/InputControl/blurb';
+import ImageInput 			from '../../components/InputControl/imageInput';
+import LinkInput 			from '../../components/InputControl/linkInput';
 import withContextMenu 		from '../../components/ContextMenu/contextMenu';
 import PageForm 			from './pageForm';
-import NewGroupForm 		from './newGroupForm';
+import NewGroupForm 		from '../../components/Form/newGroupForm';
 import PageElementList 		from './pageElementList';
-import PageGroupList 		from './pageGroupList';
+import PageGroupList 		from '../../components/GroupPageElements/pageGroupList';
+import PageFormRedux from './pageFormRedux';
 import {
 	createPageElement,
 	createPageElementGroup,
 	updatePageSafely,
 	createPageElementsForGroup,
 	// deletePageElementsForGroup,
+	savePageElementsForGroup,
 	deletePageElementWithId,
 	deletePageSafely,
+	load,
 } 							from '../../actions/';
 
 const PAGE_ELEMENT_TYPES = [
@@ -39,7 +45,8 @@ const contextMenuOptions = {
 
 
 const pageElementComponentMap = {
-	title: Title,
+	// title: Title,
+	title: TitleRedux,
 	blurb: Blurb,
 	image: ImageInput,
 	link: LinkInput,
@@ -64,27 +71,15 @@ class EditPage extends Component {
 			showSuccess: false,
 			showError: false,
 		};
-		this.onPageFormSubmit = this.onPageFormSubmit.bind(this);
-		this.onContextMenuClick = this.onContextMenuClick.bind(this);
-		this.onGroupFormSubmit = this.onGroupFormSubmit.bind(this);
-		this.handleNewGroupItem = this.handleNewGroupItem.bind(this);
-		this.handleDeleteGroupItem = this.handleDeleteGroupItem.bind(this);
-		this.toggleModal = this.toggleModal.bind(this);
-		this.onDeletePageClick = this.onDeletePageClick.bind(this);
+		this.onPageFormSubmit 		= this.onPageFormSubmit.bind(this);
+		this.onContextMenuClick 	= this.onContextMenuClick.bind(this);
+		this.onGroupFormSubmit 		= this.onGroupFormSubmit.bind(this);
+		this.handleNewGroupItem 	= this.handleNewGroupItem.bind(this);
+		this.handleDeleteGroupItem 	= this.handleDeleteGroupItem.bind(this);
+		this.handleSaveGroupItem 	= this.handleSaveGroupItem.bind(this);
+		this.toggleModal 			= this.toggleModal.bind(this);
+		this.onDeletePageClick 		= this.onDeletePageClick.bind(this);
 	}
-
-	// componentWillReceiveProps(nextProps) {
-	// 	if (nextProps.page.updateSuccess && nextProps.page.updateSuccess === null) {
-	// 		this.setState({
-	// 			showSuccess: true,
-	// 			showError: false,
-	// 		});
-	// 	} else if (!nextProps.page.updateSuccess && nextProps.page.updateSuccess === null) {
-	// 		this.setState({
-	// 			showSuccess: false,
-	// 		})
-	// 	}
-	// }
 
 	onContextMenuClick(contextMenuListItem, eventTarget) {
 		switch (contextMenuListItem.toLowerCase()) {
@@ -163,9 +158,18 @@ class EditPage extends Component {
 		dispatch(createPageElementsForGroup(groupId, activePage));
 	}
 
-	handleDeleteGroupItem(groupId) {
+	handleDeleteGroupItem(slide, index) {
 		const { dispatch } = this.props;
+		console.log("slide index to del", slide, index);
 		// dispatch(deletePageElementsForGroup(groupId));
+	}
+
+	handleSaveGroupItem(slide, index) {
+		const { dispatch } = this.props;
+		console.log("slide index to save", slide, index);
+		if (slide.length) {
+			dispatch(savePageElementsForGroup(slide))
+		}
 	}
 
 
@@ -205,19 +209,11 @@ class EditPage extends Component {
 						action="/"
 						activePage={activePage}
 						onSubmit={this.onPageFormSubmit}
-					>
-						<PageElementList
-							elements={normalPageElements}
-							elementMap={pageElementComponentMap}
-						/>
-						<PageGroupList
-							groups={activePage.groups}
-							elements={activePage.elements}
-							elementMap={pageElementComponentMap}
-							onAddNewGroupItem={this.handleNewGroupItem}
-							onDeleteGroupItem={this.handleDeleteGroupItem}
-						/>
-					</PageForm>
+						elementMap={pageElementComponentMap}
+						onAddNewGroupItem={this.handleNewGroupItem}
+						onDeleteGroupItem={this.handleDeleteGroupItem}
+						onSaveGroupItem={this.handleSaveGroupItem}
+					/>
 					<button
 						onClick={this.openNewElementModal}
 					>

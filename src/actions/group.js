@@ -3,6 +3,7 @@ import {
 	CREATE_GROUP_SUCCESS,
 	CREATE_GROUP_FAIL,
 	CREATE_NEW_LOCAL_PAGE_ELEMENT,
+	UPDATE_LOCAL_PAGE_ELEMENT_GROUP,
 } from './actionCreators';
 import { POST } from '../api/';
 
@@ -123,4 +124,35 @@ function buildPageGroupElement(structureItem, pageId, index) {
 	});
 
 	return defaultElement;
+}
+
+function updateLocalPageElementsForGroup(updatedSlides) {
+	return {
+		type: UPDATE_LOCAL_PAGE_ELEMENT_GROUP,
+		data: 
+	}
+}
+
+export function savePageElementsForGroup(slideGroup, activePage) {
+	// find page group elements in local state and update them with form data
+
+	return (dispatch, getState) => {
+		const updatedSlides = buildUpdatePageElements(slides, getState())
+		return dispatch(updateLocalPageElementsForGroup(updatedSlides));
+	};
+}
+
+function buildUpdatePageElements(slides, state) {
+	
+	slideGroup.forEach((el) => {
+		nameKey = `${el.name}[${el.id}]`;
+		formName = `${page}[${el.pageId}]`
+
+		const form = state.form.formData[formName]
+
+		if (form) {
+			updatedValue = form[nameKey];
+		}
+	})
+
 }

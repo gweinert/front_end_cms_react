@@ -1,5 +1,16 @@
 import React, { Component } from 'react';
-import PropTypes from 'prop-types';
+import PropTypes 			from 'prop-types';
+import { connect } from 'react-redux';
+import {
+	RECEIVE_USERS_SITE_SUCCESS,
+	RECEIVE_FORM_ELEMENTS,
+} from '../../actions/actionCreators';
+import { 
+	loadForm,
+	onFieldChange,
+} from '../../actions';
+import Field from '../../components/ReduxFields/field';
+import PageGroupList from '../../components/GroupPageElements/pageGroupList';
 
 class PageForm extends Component {
 	static propTypes = {
@@ -28,16 +39,27 @@ class PageForm extends Component {
 			name: props.activePage.name,
 			path: props.activePage.path,
 		};
-		this.onInputChange = this.onInputChange.bind(this);
+		// this.onInputChange = this.onInputChange.bind(this);
 		this.onSubmit = this.onSubmit.bind(this);
 		this.inputRefs = {};
+		this.handleFieldChange = this.handleFieldChange.bind(this);
 	}
 
-	onInputChange(e) {
-		const { value } = e.target;
-		const pageProp = e.target.getAttribute('name');
-		this.setState({ [pageProp]: value });
+	componentWillMount() {
+		const { activePage, dispatch } = this.props;
+		const data = {};
+		activePage.elements.forEach((el) => {
+			const key = `${el.type}[${el.id}]`;
+			data[key] = el.body;
+		});
+		dispatch(loadForm(data, activePage.id));
 	}
+
+	// onInputChange(e) {
+	// 	const { value } = e.target;
+	// 	const pageProp = e.target.getAttribute('name');
+	// 	this.setState({ [pageProp]: value });
+	// }
 
 	onSubmit(e) {
 		e.preventDefault();
@@ -50,6 +72,11 @@ class PageForm extends Component {
 
 			this.props.onSubmit(updatedPage);
 		}
+	}
+
+	handleFieldChange(fieldInfo) {
+		const { activePage, dispatch } = this.props;
+		dispatch(onFieldChange(fieldInfo, activePage.id));
 	}
 
 	buildPageElements() {
@@ -96,8 +123,12 @@ class PageForm extends Component {
 			action,
 			method,
 			children,
-			// activePage,
+			activePage,
+			form,
+			elementMap,
 		} = this.props;
+
+		const pageForm = form.formData[`page[${activePage.id}]`];
 
 		return (
 			<form
@@ -125,22 +156,32 @@ class PageForm extends Component {
 						/>
 					</label>
 				</div>
-
-				{children.map((child) => {
-					if (typeof child.type === 'function') { // if its a page element
-						return React.cloneElement(
-							child,
-							{ ...child.props,
-								elements: child.props.elements.map((el) => {
-									const inputRefKey = `${el.name}_${el.id}`;
-									return { ...el, ref: (ref) => { this.inputRefs[inputRefKey] = ref; } };
-								}),
-							},
+				{activePage.elements.filter(el => el.groupId === 0)
+					.map((el, index) => {
+						const InputComponent = elementMap[el.type.toLowerCase()];
+						const nameKey = `${el.type}[${el.id}]`;
+						const value = pageForm ? pageForm[nameKey] : '';
+						return (
+							<Field
+								{...el.props}
+								value={value}
+								onFieldChange={this.onFieldChange}
+								key={nameKey}
+								name={nameKey}
+								component={InputComponent}
+							/>
 						);
-					}
-
-					return child;
-				})}
+					})
+				}
+				<PageGroupList
+					pageForm={pageForm}
+					groups={activePage.elementsGroups}
+					elementMap={elementMap}
+					onAddNewGroupItem={this.props.onAddNewGroupItem}
+					onDeleteGroupItem={this.props.onDeleteGroupItem}
+					onSaveGroupItem={this.props.onSaveGroupItem}
+					onFieldChange={this.handleFieldChange}
+				/>
 				<input
 					onClick={this.onSubmit}
 					type="submit"
@@ -151,4 +192,28 @@ class PageForm extends Component {
 	}
 }
 
-export default PageForm;
+const mapStateToProps = (state) => {
+	const { form } = state;
+
+	return {
+		form,
+	};
+}
+
+export default connect(mapStateToProps)(PageForm);
+
+// create new, "configured" function
+// const PageFormRedux = reduxForm({
+// 	form: 'page', // a unique identifier for this form
+// 	keepDirtyOnReinitialize: true,
+// 	enableReinitialize: true,
+// })(PageForm);
+
+// const PageFormReduxLoad = connect(
+// 	state => ({
+// 		initialValues: state.site.formData,
+// 	}),
+// 	{ load: RECEIVE_FORM_ELEMENTS },
+// )(PageFormRedux);
+
+// export default PageFormReduxLoad;

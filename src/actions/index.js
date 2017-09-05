@@ -20,7 +20,13 @@ import {
 import {
 	createPageElementGroup,
 	createPageElementsForGroup,
+	savePageElementsForGroup,
 } from './group';
+
+import {
+	loadForm,
+	onFieldChange,
+} from './form';
 
 export {
 	fetchUsersSiteIfNeeded,
@@ -31,5 +37,9 @@ export {
 	deletePageElementWithId,
 	createPageElementGroup,
 	createPageElementsForGroup,
+	savePageElementsForGroup,
 	updatePageSafely,
+	loadForm,
+	onFieldChange,
+	
 };

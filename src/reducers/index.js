@@ -1,5 +1,6 @@
 import { combineReducers } 	from 'redux';
-import { reducer as form } 	from 'redux-form';
+// import { reducer as form } 	from 'redux-form';
+import form from './form';
 import site 				from './site';
 import page 				from './page';
 
