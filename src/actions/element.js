@@ -1,8 +1,8 @@
 import {
 	CREATE_NEW_LOCAL_PAGE_ELEMENT,
-	REQUEST_DELETE_PAGE_ELEMENT,
-	DELETE_PAGE_ELEMENT_SUCCESS,
-	DELETE_PAGE_ELEMENT_FAIL,
+	REQUEST_DELETE_PAGE_ELEMENTS,
+	DELETE_PAGE_ELEMENTS_SUCCESS,
+	DELETE_PAGE_ELEMENTS_FAIL,
 } from './actionCreators';
 import { POST } from '../api/';
 
@@ -35,12 +35,22 @@ function buildPageElement(type, activePage) {
 		}
 	});
 
+	const tempId = makeTempId();
+
+	defaultElement.id = tempId;
 	defaultElement.pageId = activePage.id;
 	defaultElement.sortOrder = normalElements.length;
-	defaultElement.name = `${type}${numberOfSamePageElements}`;
+	defaultElement.name = `${type}${tempId}`;
 	defaultElement.type = type;
 
 	return defaultElement;
+}
+
+function makeTempId() {
+	// Math.random should be unique because of its seeding algorithm.
+	// Convert it to base 36 (numbers + letters), and grab the first 9 characters
+	// after the decimal.
+	return `_ ${Math.random().toString(36).substr(2, 9)}`;
 }
 
 // can dispatch aa single or an array of page elements
@@ -57,32 +67,34 @@ export function createPageElement(pageElementType, activePage) {
 	return dispatch => dispatch(createNewLocalPageElements(pageElement, activePage.id));
 }
 
-function requestDeletePageElement() {
+// DELETE
+
+function requestDeletePageElements() {
 	return {
-		type: REQUEST_DELETE_PAGE_ELEMENT,
+		type: REQUEST_DELETE_PAGE_ELEMENTS,
 	};
 }
 
-function deletePageElementSuccess(payload) {
+function deletePageElementsSuccess(payload) {
 	return {
-		type: DELETE_PAGE_ELEMENT_SUCCESS,
+		type: DELETE_PAGE_ELEMENTS_SUCCESS,
 		payload,
 	};
 }
 
-function deletePageElementFail() {
+function deletePageElementsFail() {
 	return {
-		type: DELETE_PAGE_ELEMENT_FAIL,
+		type: DELETE_PAGE_ELEMENTS_FAIL,
 	};
 }
 
-function deletePageElement(id) {
-	const formData = JSON.stringify({ id });
-	return POST('element/delete', formData, requestDeletePageElement, deletePageElementSuccess, deletePageElementFail);
+function deletePageElements(pageElementsIds, groupId) {
+	const formData = JSON.stringify({ groupId, ids: pageElementsIds });
+	return POST('element/delete', formData, requestDeletePageElements, deletePageElementsSuccess, deletePageElementsFail);
 }
 
 
-function shouldDeletePageElement(state) {
+function shouldDeletePageElements(state) {
 	if (state.site.isDeleting) {
 		return false;
 	}
@@ -90,10 +102,10 @@ function shouldDeletePageElement(state) {
 	return true;
 }
 
-export function deletePageElementWithId(id) {
+export function deletePageElementsWithId(pageElementsIds, groupId) {
 	return (dispatch, getState) => {
-		if (shouldDeletePageElement(getState())) {
-			return dispatch(deletePageElement(id));
+		if (shouldDeletePageElements(getState())) {
+			return dispatch(deletePageElements(pageElementsIds, groupId));
 		}
-	}
+	};
 }

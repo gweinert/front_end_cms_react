@@ -6,9 +6,9 @@ import {
 	REQUEST_CREATE_GROUP,
 	CREATE_GROUP_SUCCESS,
 	CREATE_GROUP_FAIL,
-	REQUEST_DELETE_PAGE_ELEMENT,
-	DELETE_PAGE_ELEMENT_SUCCESS,
-	DELETE_PAGE_ELEMENT_FAIL,
+	REQUEST_DELETE_PAGE_ELEMENTS,
+	DELETE_PAGE_ELEMENTS_SUCCESS,
+	DELETE_PAGE_ELEMENTS_FAIL,
 	REQUEST_NEW_PAGE,
 	CREATE_NEW_PAGE_SUCCESS,
 	CREATE_NEW_PAGE_FAIL,
@@ -18,6 +18,9 @@ import {
 	RECEIVE_FORM_ELEMENTS,
 	LOAD,
 	UPDATE_LOCAL_PAGE_ELEMENT_GROUP,
+	CREATE_NEW_LOCAL_PAGE_ELEMENTS_FOR_GROUP,
+	SET_ACTIVE_PAGE,
+	UPDATE_PAGE_SUCCESS,
 } from '../actions/actionCreators';
 
 // const LOAD = 'redux-form-examples/account/LOAD';
@@ -29,6 +32,7 @@ export default function site(
 		isDeleting: false,
 		data: null,
 		error: null,
+		activePageId: null,
 		// formReduxdata: null,
 		// formData: null,
 	},
@@ -40,6 +44,21 @@ export default function site(
 		return { ...state, isFetching: false, data: action.payload };
 	case RECEIVE_USERS_SITE_FAIL:
 		return { ...state, isFetching: false, error: action.payload };
+	case SET_ACTIVE_PAGE:
+		return { ...state, activePageId: action.pageId };
+	case UPDATE_PAGE_SUCCESS:
+		return {
+			...state,
+			data: {
+				...state.data,
+				pages: state.data.pages.map(page => (
+					page.id === action.payload.data.id ?
+						action.payload.data
+						:
+						page
+				)),
+			},
+		};
 	case CREATE_NEW_LOCAL_PAGE_ELEMENT:
 		return {
 			...state,
@@ -55,15 +74,15 @@ export default function site(
 		};
 	case CREATE_GROUP_FAIL:
 		return { ...state, isPosting: false };
-	case REQUEST_DELETE_PAGE_ELEMENT:
+	case REQUEST_DELETE_PAGE_ELEMENTS:
 		return { ...state, isDeleting: true };
-	case DELETE_PAGE_ELEMENT_SUCCESS:
-		return { 
+	case DELETE_PAGE_ELEMENTS_SUCCESS:
+		return {
 			...state,
-			isDeleting: true,
-			data: removePageElement(state.data, action),
+			isDeleting: false,
+			data: removePageElements(state, action),
 		};
-	case DELETE_PAGE_ELEMENT_FAIL:
+	case DELETE_PAGE_ELEMENTS_FAIL:
 		return { ...state, isDeleting: false };
 	case REQUEST_NEW_PAGE:
 		return { ...state, isPosting: true };
@@ -87,6 +106,33 @@ export default function site(
 		};
 	case DELETE_PAGE_FAIL:
 		return { ...state, isDeleting: false };
+	case CREATE_NEW_LOCAL_PAGE_ELEMENTS_FOR_GROUP:
+		return {
+			...state,
+			data: {
+				...state.data,
+				pages: state.data.pages.map(page => (
+					page.id === action.pageId ?
+						{
+							...page,
+							elements: [
+								...page.elements, ...action.pageElements,
+							],
+							groups: page.groups.map(group => (
+								group.id === action.pageElements[0].groupId ?
+									{
+										...group,
+										elements: [...group.elements, ...action.pageElements],
+									}
+									:
+									group
+							)),
+						}
+						:
+						page
+				)),
+			},
+		};
 	case UPDATE_LOCAL_PAGE_ELEMENT_GROUP:
 		return {
 			...state,
@@ -96,19 +142,33 @@ export default function site(
 					page.id === action.pageId ?
 						{
 							...page,
-							elementsGroups: {
-								...page.elementsGroups,
-								[action.groupId]: page.elementsGroups[action.groupId].map((el, index) => {
-									el[action[slide[index][propValue]]] = action[slide[index][value]]
-									return el;
-								})
-							}
+							elements: page.elements.map(el => (
+								(el.groupSortOrder === action.slideIndex) &&
+								(el.groupId === action.data[0].groupId) ?
+									action.data.find(actionPe => actionPe.id === el.id)
+									:
+									el
+							)),
+							groups: page.groups.map(group => (
+								group.id === action.data[0].groupId ?
+									{
+										...group,
+										elements: group.elements.map((el, index) => (
+											el.groupSortOrder === action.slideIndex ?
+												action.data.find(actionPe => actionPe.id === el.id)
+												:
+												el
+										)),
+									}
+									:
+									group
+							)),
 						}
 						:
 						page
 				)),
 			},
-		}
+		};
 	default: return state;
 	}
 }
@@ -177,7 +237,10 @@ function addNewPageElementAndGroup(state, action) {
 				{
 					...page,
 					elements: [...page.elements, ...elements],
-					groups: [...page.groups, group],
+					groups: [
+						...page.groups,
+						{ ...group, elements },
+					],
 				}
 				:
 				page
@@ -192,16 +255,25 @@ function buildPageElements(oldElements, action) {
 	return [...oldElements, action.pageElements];
 }
 
-function removePageElement(state, action) {
-	const { id, pageId } = action.payload;
+function removePageElements(state, action) {
+	const { ids } = action.payload;
 
 	return {
-		...state,
-		pages: state.pages.map(page => (
-			page.id === pageId ?
+		...state.data,
+		pages: state.data.pages.map(page => (
+			page.id === state.activePageId ?
 				{
 					...page,
-					elements: page.elements.filter(el => el.id !== id),
+					elements: page.elements.filter(el => ids.indexOf(el.id) < 0),
+					groups: page.groups.map(group => (
+						group.id === action.payload.groupId ?
+							{
+								...group,
+								elements: group.elements.filter(el => ids.indexOf(el.id) < 0),
+							}
+							:
+							group
+					)),
 				}
 				:
 				page

@@ -3,8 +3,8 @@ import PropTypes from 'prop-types';
 
 class Field extends Component {
 	static propTypes = {
-		component: PropTypes.node.isRequired,
-		onFieldChange: PropTypes.func,
+		component: PropTypes.func.isRequired,
+		onFieldChange: PropTypes.func.isRequired,
 		name: PropTypes.string.isRequired,
 	}
 
@@ -27,16 +27,15 @@ class Field extends Component {
 			name,
 			value,
 		};
-		// console.log("fieldIfo field", fieldInfo);
 		onFieldChange(fieldInfo);
 	}
 
 	render() {
 		const { component, value } = this.props;
 		const WrappedComponent = component;
-		// console.log("field", this.props);
 		return (
 			<WrappedComponent
+				className="field"
 				onChange={this.onChange}
 				value={value}
 				{...this.props}

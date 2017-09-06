@@ -95,7 +95,7 @@ class Blurb extends Component {
 		const labelValue = label || name;
 
 		return (
-			<div className={className}>
+			<div id={id} className={className}>
 				<label htmlFor="blurb">{labelValue}
 					<Editor
 						editorState={editorState}

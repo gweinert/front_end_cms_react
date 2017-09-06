@@ -20,9 +20,8 @@ import {
 	createPageElementGroup,
 	updatePageSafely,
 	createPageElementsForGroup,
-	// deletePageElementsForGroup,
 	savePageElementsForGroup,
-	deletePageElementWithId,
+	deletePageElementsWithId,
 	deletePageSafely,
 	load,
 } 							from '../../actions/';
@@ -94,9 +93,9 @@ class EditPage extends Component {
 	}
 
 
-	onPageFormSubmit(updatedPage) {
+	onPageFormSubmit(pageForm) {
 		const { dispatch } = this.props;
-		dispatch(updatePageSafely(updatedPage));
+		dispatch(updatePageSafely(pageForm));
 	}
 
 	onGroupFormSubmit(group) {
@@ -120,39 +119,27 @@ class EditPage extends Component {
 	deletePageElement(targetNode) {
 		const { dispatch } = this.props;
 		console.log("delete page element", targetNode);
-		let validNodeElement = targetNode.className.includes('input-control') && targetNode;
+		let validNodeElement = targetNode.className.includes('field') && targetNode;
 		let elementToDeleteId;
-
-		function getElementToDeleteId(targetNodeElement) {
-			const targetNodeIdType = targetNode.id.split('_')[0];
-			console.log("targernode type", targetNodeIdType);
-			const validElement = PAGE_ELEMENT_TYPES.indexOf(targetNodeIdType) > -1;
-			console.log("valid EL", validElement);
-			
-			if (validElement) {
-				const targetNodeId = targetNode.id.split('_')[1];
-				return targetNodeId;
-			}
-
-			return false;
-		}
 
 		// find the input element with the id
 		if (validNodeElement) {
-			elementToDeleteId = getElementToDeleteId(validNodeElement);
+			elementToDeleteId = targetNode.id;
 		} else {
-			validNodeElement = findAncestor(targetNode, 'input-control');
+			validNodeElement = findAncestor(targetNode, 'field');
 			if (validNodeElement) {
-				elementToDeleteId = getElementToDeleteId(validNodeElement);
+				elementToDeleteId = targetNode.id;
 			}
 		}
-		console.log("validNodeElement", validNodeElement, elementToDeleteId);
+
 		if (elementToDeleteId) {
-			dispatch(deletePageElementWithId(elementToDeleteId));
+			const elsToDel = [parseInt(elementToDeleteId, 10)];
+			dispatch(deletePageElementsWithId(elsToDel));
 		}
 	}
 
 	handleNewGroupItem(groupId) {
+		console.log("handleNewGroupItem", groupId);
 		const { dispatch, activePage } = this.props;
 
 		dispatch(createPageElementsForGroup(groupId, activePage));
@@ -160,15 +147,15 @@ class EditPage extends Component {
 
 	handleDeleteGroupItem(slide, index) {
 		const { dispatch } = this.props;
-		console.log("slide index to del", slide, index);
-		// dispatch(deletePageElementsForGroup(groupId));
+		const ids = slide.map(el => parseInt(el.id, 10));
+		console.log("slide index to del", slide, index, ids);
+		dispatch(deletePageElementsWithId(ids, slide[0].groupId));
 	}
 
 	handleSaveGroupItem(slide, index) {
-		const { dispatch } = this.props;
-		console.log("slide index to save", slide, index);
+		const { dispatch, activePage } = this.props;
 		if (slide.length) {
-			dispatch(savePageElementsForGroup(slide))
+			dispatch(savePageElementsForGroup(slide, index, activePage.id));
 		}
 	}
 
@@ -253,7 +240,21 @@ const mapStateToProps = (state) => {
 export default connect(mapStateToProps)(withContextMenu(EditPage, contextMenuOptions));
 
 
-function findAncestor (el, cls) {
+function findAncestor(el, cls) {
 	while ((el = el.parentElement) && !el.classList.contains(cls));
 	return el;
 }
+
+// function getElementToDeleteId(targetNode) {
+// 	const targetNodeIdType = targetNode.id.split('_')[0];
+// 	console.log("targernode type", targetNodeIdType);
+// 	const validElement = PAGE_ELEMENT_TYPES.indexOf(targetNodeIdType) > -1;
+// 	console.log("valid EL", validElement);
+	
+// 	if (validElement) {
+// 		const targetNodeId = targetNode.id.split('_')[1];
+// 		return targetNodeId;
+// 	}
+
+// 	return false;
+// }

@@ -10,7 +10,7 @@ import {
 
 import {
 	createPageElement,
-	deletePageElementWithId,
+	deletePageElementsWithId,
 } from './element';
 
 import {
@@ -21,6 +21,7 @@ import {
 	createPageElementGroup,
 	createPageElementsForGroup,
 	savePageElementsForGroup,
+	// deletePageElementsForGroup,
 } from './group';
 
 import {
@@ -34,12 +35,12 @@ export {
 	createNewPageSafely,
 	deletePageSafely,
 	createPageElement,
-	deletePageElementWithId,
+	deletePageElementsWithId,
 	createPageElementGroup,
 	createPageElementsForGroup,
 	savePageElementsForGroup,
+	// deletePageElementsForGroup,
 	updatePageSafely,
 	loadForm,
 	onFieldChange,
-	
 };

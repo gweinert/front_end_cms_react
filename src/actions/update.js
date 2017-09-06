@@ -28,6 +28,7 @@ function updatePageFail(payload) {
 
 function updatePage(updatedPage) {
 	const formData = JSON.stringify(updatedPage);
+	console.log("updatedPage", updatedPage);
 	return POST('page/update', formData, requestUpdatePage, updatePageSuccess, updatePageFail);
 }
 
@@ -39,10 +40,44 @@ function shouldUpdatePage(state) {
 	return true;
 }
 
-export function updatePageSafely(updatedPage) {
+export function updatePageSafely(pageForm) {
 	return (dispatch, getState) => {
 		if (shouldUpdatePage(getState())) {
+			const updatedPage = buildPage(pageForm, getState());
 			return dispatch(updatePage(updatedPage));
 		}
 	}
+}
+
+function buildPage(state, _state) {
+	const { activePageId } = _state.page;
+	const activePage = _state.site.data.pages.find(page => page.id === activePageId);
+	const formName = `page[${activePageId}]`;
+	const form = _state.form.formData[formName];
+	const updatedElements = buildPageElementsFromForm(activePage.elements, form);
+
+	return {
+		...activePage,
+		elements: updatedElements,
+	};
+}
+
+function buildPageElementsFromForm(elements, formState) {
+	return elements.map((el) => {
+		const nameKey = `${el.type}[${el.id}]`;
+		const updatedValue = formState[nameKey] || el.body;
+
+		// remove temp id if its has one
+		if (typeof el.id === 'string' && el.id[0] === '_') {
+			delete el.id;
+		}
+
+		switch (el.type.toLowerCase()) {
+		case 'title':
+			return { ...el, body: updatedValue };
+		case 'blurb':
+			return { ...el, body: updatedValue };
+		default: return el;
+		}
+	});
 }

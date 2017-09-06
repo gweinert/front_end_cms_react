@@ -2,18 +2,19 @@ import React from 'react';
 import PropTypes from 'prop-types';
 // import withInputControl from '../../components/InputControl/inputControl';
 
-const Title = (field) => {
+const Title = (props) => {
+
 	return (
-		<div id={field.id} className={field.className}>
-			<label htmlFor="Title">{field.name}
+		<div id={props.id} className={props.className}>
+			<label htmlFor="Title">{props.name}
 				<input
-					id={`${field.id}_input`}
-					value={field.value}
-					onChange={field.onChange}
-					{...field.input}
+					id={`${props.id}_input`}
+					value={props.value}
+					onChange={props.onChange}
+					{...props.input}
 				/>
-				{field.meta && field.meta.touched && field.meta.error &&
-					<span className="error">{field.meta.error}</span>}
+				{props.meta && props.meta.touched && props.meta.error &&
+					<span className="error">{props.meta.error}</span>}
 			</label>
 		</div>
 	);
@@ -24,9 +25,9 @@ Title.propTypes = {
 	name: PropTypes.string,
 	body: PropTypes.string,
 	value: PropTypes.string,
-	id: PropTypes.string,
+	id: PropTypes.number.isRequired,
 	className: PropTypes.string,
-	onInputChange: PropTypes.func.isRequired,
+	onChange: PropTypes.func.isRequired,
 };
 
 Title.defaultProps = {
@@ -34,7 +35,6 @@ Title.defaultProps = {
 	name: '',
 	body: '',
 	value: '',
-	id: '0',
 	className: '',
 };
 

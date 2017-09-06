@@ -7,7 +7,7 @@ import SlideItem from './slideItem';
 class PageGroupList extends Component {
 	static propTypes = {
 		elementMap: PropTypes.object,
-		groups: PropTypes.object,
+		groups: PropTypes.arrayOf(PropTypes.object),
 		onAddNewGroupItem: PropTypes.func,
 		onDeleteGroupItem: PropTypes.func,
 		onSaveGroupItem: PropTypes.func,
@@ -55,24 +55,40 @@ class PageGroupList extends Component {
 
 		return (
 			<div>
-				{Object.keys(groups).map((groupKey, index) => (
-					<div className="group" key={groupKey}>
-						{groups[groupKey].map((slide, slideIndex) => (
-							<SlideItem
-								pageForm={pageForm}
-								slide={slide}
-								index={slideIndex}
-								elementMap={elementMap}
-								onDelete={this.onDeleteSlide}
-								onSave={this.onSaveSlide}
-								onFieldChange={this.props.onFieldChange}
-							/>
-						))}
-					</div>
-				))}
+				{groups.map((group, index) => {
+					const groupSlides = groupBy(group.elements, 'groupSortOrder');
+					console.log("groupSlides", groupSlides);
+					return (
+						<div className="group" key={group.id}>
+							<h2>{group.name}</h2>
+							{Object.keys(groupSlides).map((slideKey, slideIndex) => (
+								<SlideItem
+									key={slideKey}
+									pageForm={pageForm}
+									slide={groupSlides[slideKey]}
+									index={slideIndex}
+									elementMap={elementMap}
+									onDelete={this.onDeleteSlide}
+									onSave={this.onSaveSlide}
+									onFieldChange={this.props.onFieldChange}
+								/>
+							))}
+							<button onClick={() => { this.onAddNewGroupItem(group.id); }}>
+								Add New Slide
+							</button>
+						</div>
+					);
+				})}
 			</div>
 		);
 	}
 }
 
 export default PageGroupList;
+
+function groupBy(xs, key) {
+	return xs.reduce((rv, x) => {
+		(rv[x[key]] = rv[x[key]] || []).push(x);
+		return rv;
+	}, {});
+}

@@ -58,6 +58,8 @@ class SlideItem extends Component {
 
 		const showEdit = index === activeEditIndex ? 'show-edit' : '';
 
+		// console.log("slide", slide);
+
 		return (
 			<div className={`slide ${showEdit}`}>
 				<h2>Slide {index + 1}</h2>
@@ -66,9 +68,9 @@ class SlideItem extends Component {
 					const nameKey = `${el.type}[${el.id}]`;
 					const value = pageForm ? pageForm[nameKey] : '';
 					return (
-						<div>
-							{el.type.toLowerCase() === 'title' ?
-								<h4>{el.body}</h4> : null
+						<div key={el.id}>
+							{!showEdit && el.type.toLowerCase() === 'title' ?
+								<h4>{el.body || value}</h4> : null
 							}
 							<div className="edit">
 								<Field

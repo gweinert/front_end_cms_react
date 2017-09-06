@@ -21,6 +21,7 @@ class PageForm extends Component {
 		onSuccess: PropTypes.func,
 		onFail: PropTypes.func,
 		children: PropTypes.arrayOf(PropTypes.node),
+		form: PropTypes.object,
 	}
 
 	static defaultProps = {
@@ -62,60 +63,20 @@ class PageForm extends Component {
 	// }
 
 	onSubmit(e) {
+		const { activePage, form, onSubmit } = this.props;
 		e.preventDefault();
 
 		// avoid submitting on clicking any 'button' type in form
 		if (e.target.getAttribute('type') === 'submit') {
-			const updatedPageElements = this.buildPageElements();
-			const updatedPage = this.buildPage(updatedPageElements);
-			console.log("updatePage", updatedPage);
-
-			this.props.onSubmit(updatedPage);
+			const formName = `page[${activePage.id}]`;
+			const pageForm = form[formName];
+			this.props.onSubmit(pageForm);
 		}
 	}
 
 	handleFieldChange(fieldInfo) {
 		const { activePage, dispatch } = this.props;
 		dispatch(onFieldChange(fieldInfo, activePage.id));
-	}
-
-	buildPageElements() {
-		console.log("input refs", this.inputRefs);
-		const updatedPageElements = Object.keys(this.inputRefs).map((inputElKey) => {
-			const inputEl = this.inputRefs[inputElKey];
-			const pageElObject = inputEl.props;
-
-			switch (pageElObject.type) {
-			case 'title':
-				return { ...pageElObject, body: inputEl.getValue() || pageElObject.body };
-			case 'blurb':
-				return { ...pageElObject, body: inputEl.getValue() || pageElObject.body };
-			case 'image':
-				return { ...pageElObject, imageURL: inputEl.getValue() || pageElObject.imageURL };
-			case 'link':
-				return {
-					...pageElObject,
-					linkPath: inputEl.getValue('linkPath') || pageElObject.linkPath,
-					linkText: inputEl.getValue('linkText') || pageElObject.linkText,
-				};
-			default: return pageElObject;
-			}
-		});
-
-		return updatedPageElements;
-	}
-
-	buildPage(updatedPageElements) {
-		const { activePage } = this.props;
-
-		const updatedPage = {
-			...activePage,
-			name: this.state.name,
-			path: this.state.path,
-			elements: updatedPageElements,
-		};
-
-		return updatedPage;
 	}
 
 	render() {
@@ -160,12 +121,12 @@ class PageForm extends Component {
 					.map((el, index) => {
 						const InputComponent = elementMap[el.type.toLowerCase()];
 						const nameKey = `${el.type}[${el.id}]`;
-						const value = pageForm ? pageForm[nameKey] : '';
+						const value = pageForm && pageForm[nameKey] ? pageForm[nameKey] : '';
 						return (
 							<Field
-								{...el.props}
+								{...el}
 								value={value}
-								onFieldChange={this.onFieldChange}
+								onFieldChange={this.handleFieldChange}
 								key={nameKey}
 								name={nameKey}
 								component={InputComponent}
@@ -175,7 +136,7 @@ class PageForm extends Component {
 				}
 				<PageGroupList
 					pageForm={pageForm}
-					groups={activePage.elementsGroups}
+					groups={activePage.groups}
 					elementMap={elementMap}
 					onAddNewGroupItem={this.props.onAddNewGroupItem}
 					onDeleteGroupItem={this.props.onDeleteGroupItem}
