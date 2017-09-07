@@ -1,6 +1,5 @@
 import {
 	RECEIVE_FORM_ELEMENTS,
-	LOAD,
 	ON_FIELD_CHANGE,
 } from './actionCreators';
 

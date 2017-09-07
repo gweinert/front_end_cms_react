@@ -91,13 +91,19 @@ export function createPageElementGroup(groupFormState, activePage) {
 export function createPageElementsForGroup(groupId, activePage) {
 	const pageElements = [];
 	const group = activePage.groups.find(groupItem => groupItem.id === parseInt(groupId, 10));
+	const elementsPerSlide = group.structure.reduce((amount, item) => {
+		if (amount.amount) {
+			return amount.amount + item.amount;
+		}
+		return amount + item.amount;
+	});
 
 	if (group) {
 		let sortOrder = 0;
 		group.structure.forEach((structureItem, index) => {
 			for (let i = 0; i < structureItem.amount; i += 1) {
 				const pageId = activePage.id;
-				const groupSortOrder = group.elements.length; // slide index
+				const groupSortOrder = Math.floor(group.elements.length / elementsPerSlide);
 				const newPageGroupElement = buildPageGroupElement(structureItem, pageId, i, groupSortOrder, sortOrder);
 				pageElements.push(newPageGroupElement);
 				sortOrder += 1;

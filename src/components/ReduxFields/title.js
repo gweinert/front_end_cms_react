@@ -1,9 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-// import withInputControl from '../../components/InputControl/inputControl';
 
 const Title = (props) => {
-
 	return (
 		<div id={props.id} className={props.className}>
 			<label htmlFor="Title">{props.name}
@@ -25,7 +23,7 @@ Title.propTypes = {
 	name: PropTypes.string,
 	body: PropTypes.string,
 	value: PropTypes.string,
-	id: PropTypes.number.isRequired,
+	id: PropTypes.oneOfType([PropTypes.number, PropTypes.string]).isRequired,
 	className: PropTypes.string,
 	onChange: PropTypes.func.isRequired,
 };

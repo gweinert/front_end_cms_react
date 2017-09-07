@@ -27,7 +27,7 @@ function DefaultElement() {
 function buildPageElement(type, activePage) {
 	const defaultElement = DefaultElement();
 	const normalElements = activePage.elements.filter(el => el.groupId === 0);
-	let numberOfSamePageElements = 1;
+	let numberOfSamePageElements = 1; // @DEV: use for label
 
 	normalElements.forEach((el) => {
 		if (el.type === type) {
@@ -88,7 +88,13 @@ function deletePageElementsFail() {
 	};
 }
 
+// If its a local element that hasn't been sent to db delete locally, else delete via database call
 function deletePageElements(pageElementsIds, groupId) {
+	console.log('page els ids', pageElementsIds);
+	if (pageElementsIds.length && typeof pageElementsIds[0] === 'string') { // is temp id
+		return deletePageElementsSuccess({ groupId, ids: pageElementsIds });
+	}
+
 	const formData = JSON.stringify({ groupId, ids: pageElementsIds });
 	return POST('element/delete', formData, requestDeletePageElements, deletePageElementsSuccess, deletePageElementsFail);
 }

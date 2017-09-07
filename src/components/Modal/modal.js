@@ -25,7 +25,7 @@ const Modal = ({ show, onCloseClick, children }) => {
 Modal.propTypes = {
 	show: PropTypes.bool,
 	onCloseClick: PropTypes.func,
-	children: PropTypes.oneOf([PropTypes.node, PropTypes.arrayOf(PropTypes.node)]),
+	children: PropTypes.oneOfType([PropTypes.node, PropTypes.arrayOf(PropTypes.node)]),
 };
 
 Modal.defaultProps = {

@@ -1,20 +1,17 @@
 import React, { Component } from 'react';
 import PropTypes 			from 'prop-types';
-import { connect } from 'react-redux';
+import { connect } 			from 'react-redux';
 import {
-	RECEIVE_USERS_SITE_SUCCESS,
-	RECEIVE_FORM_ELEMENTS,
-} from '../../actions/actionCreators';
-import { 
 	loadForm,
 	onFieldChange,
-} from '../../actions';
-import Field from '../../components/ReduxFields/field';
-import PageGroupList from '../../components/GroupPageElements/pageGroupList';
+} 							from '../../actions';
+import Field 				from '../../components/ReduxFields/field';
+import PageGroupList 		from '../../components/GroupPageElements/pageGroupList';
 
 class PageForm extends Component {
 	static propTypes = {
 		activePage: PropTypes.object,
+		elementMap: PropTypes.object,
 		action: PropTypes.string,
 		method: PropTypes.string,
 		onSubmit: PropTypes.func,
@@ -22,6 +19,7 @@ class PageForm extends Component {
 		onFail: PropTypes.func,
 		children: PropTypes.arrayOf(PropTypes.node),
 		form: PropTypes.object,
+		dispatch: PropTypes.func.isRequired,
 	}
 
 	static defaultProps = {
@@ -36,31 +34,19 @@ class PageForm extends Component {
 
 	constructor(props) {
 		super(props);
-		this.state = {
-			name: props.activePage.name,
-			path: props.activePage.path,
-		};
-		// this.onInputChange = this.onInputChange.bind(this);
 		this.onSubmit = this.onSubmit.bind(this);
-		this.inputRefs = {};
 		this.handleFieldChange = this.handleFieldChange.bind(this);
 	}
 
 	componentWillMount() {
-		const { activePage, dispatch } = this.props;
-		const data = {};
-		activePage.elements.forEach((el) => {
-			const key = `${el.type}[${el.id}]`;
-			data[key] = el.body;
-		});
-		dispatch(loadForm(data, activePage.id));
+		this.buildFormState();
 	}
 
-	// onInputChange(e) {
-	// 	const { value } = e.target;
-	// 	const pageProp = e.target.getAttribute('name');
-	// 	this.setState({ [pageProp]: value });
-	// }
+	componentWillReceiveProps(nextProps) {
+		if (!this.props.form.success && nextProps.form.success) {
+			this.buildFormState(nextProps);
+		}
+	}
 
 	onSubmit(e) {
 		const { activePage, form, onSubmit } = this.props;
@@ -70,8 +56,24 @@ class PageForm extends Component {
 		if (e.target.getAttribute('type') === 'submit') {
 			const formName = `page[${activePage.id}]`;
 			const pageForm = form[formName];
-			this.props.onSubmit(pageForm);
+			onSubmit(pageForm);
 		}
+	}
+
+	buildFormState(nextProps) {
+		const { dispatch } = this.props;
+		const data = {};
+		const activePage = nextProps ? nextProps.activePage : this.props.activePage;
+
+		activePage.elements.forEach((el) => {
+			const key = `${el.type}[${el.id}]`;
+			data[key] = el.body;
+		});
+
+		data.name = activePage.name;
+		data.path = activePage.path;
+
+		dispatch(loadForm(data, activePage.id));
 	}
 
 	handleFieldChange(fieldInfo) {
@@ -83,13 +85,14 @@ class PageForm extends Component {
 		const {
 			action,
 			method,
-			children,
 			activePage,
 			form,
 			elementMap,
 		} = this.props;
 
 		const pageForm = form.formData[`page[${activePage.id}]`];
+		const pageNameVal = pageForm && pageForm.name ? pageForm.name : '';
+		const pagePathVal = pageForm && pageForm.path ? pageForm.path : '';
 
 		return (
 			<form
@@ -97,26 +100,20 @@ class PageForm extends Component {
 				method={method}
 				onSubmit={this.onSubmit}
 			>
-				<div>
-					<label htmlFor="Name"><span> Name: </span>
-						<input
-							name="name"
-							type="text"
-							value={this.state.name}
-							onChange={this.onInputChange}
-						/>
-					</label>
-				</div>
-				<div>
-					<label htmlFor="Path"> <span>Path:</span>
-						<input
-							name="path"
-							type="text"
-							value={this.state.path}
-							onChange={this.onInputChange}
-						/>
-					</label>
-				</div>
+				<Field
+					name="name"
+					component="input"
+					type="text"
+					value={pageNameVal}
+					onFieldChange={this.handleFieldChange}
+				/>
+				<Field
+					name="path"
+					component="input"
+					type="text"
+					value={pagePathVal}
+					onFieldChange={this.handleFieldChange}
+				/>
 				{activePage.elements.filter(el => el.groupId === 0)
 					.map((el, index) => {
 						const InputComponent = elementMap[el.type.toLowerCase()];

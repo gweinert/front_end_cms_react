@@ -54,10 +54,14 @@ function buildPage(state, _state) {
 	const activePage = _state.site.data.pages.find(page => page.id === activePageId);
 	const formName = `page[${activePageId}]`;
 	const form = _state.form.formData[formName];
+	const pageName = form.name || activePage.name;
+	const pagePath = form.path || activePage.path;
 	const updatedElements = buildPageElementsFromForm(activePage.elements, form);
 
 	return {
 		...activePage,
+		name: pageName,
+		path: pagePath,
 		elements: updatedElements,
 	};
 }

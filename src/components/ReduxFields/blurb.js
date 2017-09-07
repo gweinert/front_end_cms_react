@@ -18,10 +18,9 @@ class Blurb extends Component {
 		name: PropTypes.string,
 		body: PropTypes.string,
 		value: PropTypes.string,
-		id: PropTypes.number,
+		id: PropTypes.oneOfType([PropTypes.number, PropTypes.string]).isRequired,
 		type: PropTypes.string,
 		className: PropTypes.string,
-		// onInputChange: PropTypes.func,
 		onChange: PropTypes.func,
 	}
 
@@ -29,11 +28,11 @@ class Blurb extends Component {
 		label: '',
 		name: '',
 		body: '',
-		// value: '',
+		value: '',
 		id: 0,
 		type: '',
 		className: '',
-		onInputChange: () => {},
+		onChange: () => {},
 	}
 
 	constructor(props) {
@@ -85,10 +84,7 @@ class Blurb extends Component {
 		const {
 			label,
 			name,
-			body,
-			value,
 			id,
-			type,
 			className,
 		} = this.props;
 		const { editorState } = this.state;
@@ -112,6 +108,5 @@ class Blurb extends Component {
 	}
 }
 
-// export default withInputControl(Blurb);
 export default Blurb;
 

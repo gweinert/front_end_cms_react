@@ -1,11 +1,18 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
+import Input from './input';
 
 class Field extends Component {
 	static propTypes = {
-		component: PropTypes.func.isRequired,
+		component: PropTypes.oneOfType([PropTypes.func, PropTypes.string]),
 		onFieldChange: PropTypes.func.isRequired,
 		name: PropTypes.string.isRequired,
+		value: PropTypes.string,
+	}
+
+	static defaultProps = {
+		component: 'input',
+		value: '',
 	}
 
 	constructor(props) {
@@ -33,14 +40,26 @@ class Field extends Component {
 	render() {
 		const { component, value } = this.props;
 		const WrappedComponent = component;
-		return (
-			<WrappedComponent
-				className="field"
-				onChange={this.onChange}
-				value={value}
-				{...this.props}
-			/>
-		);
+		switch(component) {
+		case 'input':
+			return (
+				<Input
+					className="field"
+					onChange={this.onChange}
+					value={value}
+					{...this.props}
+				/>
+			);
+		default:
+			return (
+				<WrappedComponent
+					className="field"
+					onChange={this.onChange}
+					value={value}
+					{...this.props}
+				/>
+			);
+		}
 	}
 }
 

@@ -51,13 +51,10 @@ class PageGroupList extends Component {
 			pageForm,
 		} = this.props;
 
-		console.log("groupEls", groups);
-
 		return (
 			<div>
 				{groups.map((group, index) => {
 					const groupSlides = groupBy(group.elements, 'groupSortOrder');
-					console.log("groupSlides", groupSlides);
 					return (
 						<div className="group" key={group.id}>
 							<h2>{group.name}</h2>

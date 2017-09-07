@@ -15,15 +15,12 @@ import {
 	REQUEST_DELETE_PAGE,
 	DELETE_PAGE_SUCCESS,
 	DELETE_PAGE_FAIL,
-	RECEIVE_FORM_ELEMENTS,
-	LOAD,
 	UPDATE_LOCAL_PAGE_ELEMENT_GROUP,
 	CREATE_NEW_LOCAL_PAGE_ELEMENTS_FOR_GROUP,
 	SET_ACTIVE_PAGE,
 	UPDATE_PAGE_SUCCESS,
 } from '../actions/actionCreators';
 
-// const LOAD = 'redux-form-examples/account/LOAD';
 
 export default function site(
 	state = {
@@ -33,8 +30,6 @@ export default function site(
 		data: null,
 		error: null,
 		activePageId: null,
-		// formReduxdata: null,
-		// formData: null,
 	},
 	action) {
 	switch (action.type) {

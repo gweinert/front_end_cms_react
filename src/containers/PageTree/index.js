@@ -83,7 +83,7 @@ class PageTree extends Component {
 					<li key={pageItem.id}>
 						<PageButton
 							id={pageItem.id}
-							title={pageItem.title}
+							title={pageItem.name}
 							onClick={this.onPageListItemClick}
 						/>
 						{this.renderPageList(pageItem.id)}

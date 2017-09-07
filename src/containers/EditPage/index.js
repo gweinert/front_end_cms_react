@@ -2,19 +2,13 @@ import React, { Component } from 'react';
 import PropTypes 			from 'prop-types';
 import { connect }			from 'react-redux';
 import Modal				from '../../components/Modal/modal';
-import Title 				from '../../components/InputControl/title';
-import TitleRedux 				from '../../components/ReduxFields/title';
+import Title 				from '../../components/ReduxFields/title';
 import Blurb 				from '../../components/ReduxFields/blurb';
-
-// import Blurb 				from '../../components/InputControl/blurb';
 import ImageInput 			from '../../components/InputControl/imageInput';
 import LinkInput 			from '../../components/InputControl/linkInput';
 import withContextMenu 		from '../../components/ContextMenu/contextMenu';
 import PageForm 			from './pageForm';
 import NewGroupForm 		from '../../components/Form/newGroupForm';
-import PageElementList 		from './pageElementList';
-import PageGroupList 		from '../../components/GroupPageElements/pageGroupList';
-import PageFormRedux from './pageFormRedux';
 import {
 	createPageElement,
 	createPageElementGroup,
@@ -23,7 +17,6 @@ import {
 	savePageElementsForGroup,
 	deletePageElementsWithId,
 	deletePageSafely,
-	load,
 } 							from '../../actions/';
 
 const PAGE_ELEMENT_TYPES = [
@@ -44,8 +37,7 @@ const contextMenuOptions = {
 
 
 const pageElementComponentMap = {
-	// title: Title,
-	title: TitleRedux,
+	title: Title,
 	blurb: Blurb,
 	image: ImageInput,
 	link: LinkInput,
@@ -66,7 +58,6 @@ class EditPage extends Component {
 		super(props);
 		this.state = {
 			showModal: false,
-			showNewGroupForm: true,
 			showSuccess: false,
 			showError: false,
 		};
@@ -139,7 +130,6 @@ class EditPage extends Component {
 	}
 
 	handleNewGroupItem(groupId) {
-		console.log("handleNewGroupItem", groupId);
 		const { dispatch, activePage } = this.props;
 
 		dispatch(createPageElementsForGroup(groupId, activePage));
@@ -147,8 +137,7 @@ class EditPage extends Component {
 
 	handleDeleteGroupItem(slide, index) {
 		const { dispatch } = this.props;
-		const ids = slide.map(el => parseInt(el.id, 10));
-		console.log("slide index to del", slide, index, ids);
+		const ids = slide.map(el => (el.id[0] !== '_' ? parseInt(el.id, 10) : el.id));
 		dispatch(deletePageElementsWithId(ids, slide[0].groupId));
 	}
 
@@ -182,15 +171,12 @@ class EditPage extends Component {
 
 	render() {
 		const { activePage } = this.props;
-		const { showModal, showNewGroupForm } = this.state;
+		const { showModal } = this.state;
 
 		if (activePage) {
-			const normalPageElements = activePage.elements.length ?
-				activePage.elements.filter(el => el.groupId === 0) : [];
-			console.log("activePage", activePage);
 			return (
 				<div>
-					<h1>{activePage.title}</h1>
+					<h1>{activePage.name}</h1>
 					<PageForm
 						key={activePage.id}
 						action="/"
@@ -244,17 +230,3 @@ function findAncestor(el, cls) {
 	while ((el = el.parentElement) && !el.classList.contains(cls));
 	return el;
 }
-
-// function getElementToDeleteId(targetNode) {
-// 	const targetNodeIdType = targetNode.id.split('_')[0];
-// 	console.log("targernode type", targetNodeIdType);
-// 	const validElement = PAGE_ELEMENT_TYPES.indexOf(targetNodeIdType) > -1;
-// 	console.log("valid EL", validElement);
-	
-// 	if (validElement) {
-// 		const targetNodeId = targetNode.id.split('_')[1];
-// 		return targetNodeId;
-// 	}
-
-// 	return false;
-// }

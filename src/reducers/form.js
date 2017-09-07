@@ -1,12 +1,13 @@
 import {
-	LOAD,
 	RECEIVE_FORM_ELEMENTS,
 	ON_FIELD_CHANGE,
+	UPDATE_PAGE_SUCCESS,
 } from '../actions/actionCreators';
 
-export default function page(
+export default function form(
 	state = {
 		formData: {},
+		success: null,
 	},
 	action) {
 	switch (action.type) {
@@ -26,6 +27,8 @@ export default function page(
 				},
 			},
 		};
+	case UPDATE_PAGE_SUCCESS:
+		return { ...state, success: true };
 	default: return state;
 	}
 }
