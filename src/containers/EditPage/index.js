@@ -119,12 +119,15 @@ class EditPage extends Component {
 		} else {
 			validNodeElement = findAncestor(targetNode, 'field');
 			if (validNodeElement) {
+			console.log("find anc", validNodeElement);
+		
 				elementToDeleteId = targetNode.id;
 			}
 		}
 
 		if (elementToDeleteId) {
 			const elsToDel = [parseInt(elementToDeleteId, 10)];
+			console.log("element to del id", elsToDel);
 			dispatch(deletePageElementsWithId(elsToDel));
 		}
 	}

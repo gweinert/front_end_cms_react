@@ -47,7 +47,7 @@ function withContextMenu(WrappedComponent, contextMenuOptions) {
 				show: true,
 				mousePosition: {
 					x: e.x,
-					y: e.y,
+					y: e.y + window.scrollY,
 				},
 				target: e.target,
 			});

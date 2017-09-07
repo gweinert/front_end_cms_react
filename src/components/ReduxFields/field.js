@@ -40,7 +40,7 @@ class Field extends Component {
 	render() {
 		const { component, value } = this.props;
 		const WrappedComponent = component;
-		switch(component) {
+		switch (component) {
 		case 'input':
 			return (
 				<Input
