@@ -38,7 +38,7 @@ class Field extends Component {
 	}
 
 	render() {
-		const { component, value } = this.props;
+		const { component, value, className } = this.props;
 		const WrappedComponent = component;
 		switch (component) {
 		case 'input':
@@ -53,7 +53,7 @@ class Field extends Component {
 		default:
 			return (
 				<WrappedComponent
-					className="field"
+					className={`field ${className}`}
 					onChange={this.onChange}
 					value={value}
 					{...this.props}

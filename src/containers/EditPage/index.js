@@ -4,7 +4,7 @@ import { connect }			from 'react-redux';
 import Modal				from '../../components/Modal/modal';
 import Title 				from '../../components/ReduxFields/title';
 import Blurb 				from '../../components/ReduxFields/blurb';
-import ImageInput 			from '../../components/InputControl/imageInput';
+import ImageInput 			from '../../components/ReduxFields/imageInput';
 import LinkInput 			from '../../components/InputControl/linkInput';
 import withContextMenu 		from '../../components/ContextMenu/contextMenu';
 import PageForm 			from './pageForm';
@@ -16,7 +16,9 @@ import {
 	createPageElementsForGroup,
 	savePageElementsForGroup,
 	deletePageElementsWithId,
+	deletePageGroupSafely,
 	deletePageSafely,
+	deleteImageSafely,
 } 							from '../../actions/';
 
 const PAGE_ELEMENT_TYPES = [
@@ -107,28 +109,55 @@ class EditPage extends Component {
 		});
 	}
 
+	// @ DEV check if group el
 	deletePageElement(targetNode) {
-		const { dispatch } = this.props;
-		console.log("delete page element", targetNode);
-		let validNodeElement = targetNode.className.includes('field') && targetNode;
+		const { dispatch, activePage } = this.props;
+		console.log('delete page element', targetNode);
+		let validNodeElement = targetNode.className.includes('can-delete') && targetNode;
 		let elementToDeleteId;
+		let groupId;
+		let validGroupId;
+		const elIdsToDelete = [];
 
 		// find the input element with the id
 		if (validNodeElement) {
-			elementToDeleteId = targetNode.id;
-		} else {
-			validNodeElement = findAncestor(targetNode, 'field');
-			if (validNodeElement) {
-			console.log("find anc", validNodeElement);
-		
+			if (targetNode.className.includes('group')) { // check if its a group
+				groupId = targetNode.id;
+			} else {
 				elementToDeleteId = targetNode.id;
+			}
+		} else {
+			validNodeElement = findAncestor(targetNode, 'can-delete');
+			if (validNodeElement) {
+				console.log('find anc', validNodeElement);
+				if (validNodeElement.className.includes('group')) {
+					groupId = validNodeElement.id;
+				} else {
+					elementToDeleteId = validNodeElement.id;
+				}
 			}
 		}
 
 		if (elementToDeleteId) {
-			const elsToDel = [parseInt(elementToDeleteId, 10)];
-			console.log("element to del id", elsToDel);
-			dispatch(deletePageElementsWithId(elsToDel));
+			elIdsToDelete.push(parseInt(elementToDeleteId, 10));
+		} else if (groupId) {
+			// get group id and all element ids in that to delete all
+			groupId = parseInt(groupId, 10);
+			const group = activePage.groups.find(groupItem => groupItem.id === groupId);
+			validGroupId = group.id;
+		}
+
+		if (isImage(validNodeElement || targetNode)) {
+			dispatch(deleteImageSafely(elementToDeleteId));
+		}
+		
+		if (elIdsToDelete.length) {
+			dispatch(deletePageElementsWithId(elIdsToDelete, groupId));
+		}
+
+
+		if (validGroupId) {
+			dispatch(deletePageGroupSafely(groupId));
 		}
 	}
 
@@ -232,4 +261,8 @@ export default connect(mapStateToProps)(withContextMenu(EditPage, contextMenuOpt
 function findAncestor(el, cls) {
 	while ((el = el.parentElement) && !el.classList.contains(cls));
 	return el;
+}
+
+function isImage(validNodeElement) {
+	return validNodeElement.className.includes('is-image');
 }

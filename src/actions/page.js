@@ -6,6 +6,10 @@ import {
 	REQUEST_DELETE_PAGE,
 	DELETE_PAGE_SUCCESS,
 	DELETE_PAGE_FAIL,
+	DRAG_PAGE_ITEM,
+	REQUEST_UPDATE_PAGE_SORT_ORDER,
+	UPDATE_PAGE_SORT_ORDER_SUCCESS,
+	UPDATE_PAGE_SORT_ORDER_FAIL,
 } from './actionCreators';
 import { POST } from '../api/';
 
@@ -96,7 +100,7 @@ export function deletePageSafely(pageId) {
 		if (shouldDeletePage(getState())) {
 			return dispatch(deletePage(pageId));
 		}
-	}
+	};
 }
 
 function buildNewPage(formData, state) {
@@ -110,7 +114,7 @@ function buildNewPage(formData, state) {
 		name,
 		showInNav: true,
 		siteId: data.id,
-		sortOrder: data.pages.length,
+		sortOrder: data.pages.length - 1,
 		template: templateName,
 	};
 
@@ -124,4 +128,58 @@ function slugify(text) {
 		.replace(/\-\-+/g, '-')			// Replace multiple - with single -
 		.replace(/^-+/, '')				// Trim - from start of text
 		.replace(/-+$/, '');			// Trim - from end of text
+}
+
+export function dragPageItem(dragIndex, hoverIndex) {
+
+	const payload = { dragIndex, hoverIndex };
+
+	return {
+		type: DRAG_PAGE_ITEM,
+		payload,
+	};
+}
+
+function requestUpdatePageSortOrder() {
+	return {
+		type: REQUEST_UPDATE_PAGE_SORT_ORDER,
+	};
+}
+
+function updatePageSortOrderSuccess(payload) {
+	return {
+		type: UPDATE_PAGE_SORT_ORDER_SUCCESS,
+		payload,
+	};
+}
+
+function updatePageSortOrderFail() {
+	return {
+		type: UPDATE_PAGE_SORT_ORDER_FAIL,
+	};
+}
+
+function updatePageSortOrder(pageId, newIndex) {
+	const formData = JSON.stringify({ pageId, newIndex });
+	return POST('page/sort-order',
+		formData,
+		requestUpdatePageSortOrder,
+		updatePageSortOrderSuccess,
+		updatePageSortOrderFail,
+	);
+}
+
+function shouldUpdatePageSortOrder(state) {
+	if (state.site.isUpdatingPageSortOrder) {
+		return false;
+	}
+	return true;
+}
+
+export function updatePageSortOrderSafely(pageId, newIndex) {
+	return (dispatch, getState) => {
+		if (shouldUpdatePageSortOrder(getState())) {
+			return dispatch(updatePageSortOrder(pageId, newIndex));
+		}
+	}
 }

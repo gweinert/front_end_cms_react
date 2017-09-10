@@ -2,12 +2,14 @@ import {
 	RECEIVE_FORM_ELEMENTS,
 	ON_FIELD_CHANGE,
 	UPDATE_PAGE_SUCCESS,
+	RESET_FORM_SUCCESS,
 } from '../actions/actionCreators';
 
 export default function form(
 	state = {
 		formData: {},
 		success: null,
+		lastPageUpdateSuccess: null,
 	},
 	action) {
 	switch (action.type) {
@@ -28,7 +30,9 @@ export default function form(
 			},
 		};
 	case UPDATE_PAGE_SUCCESS:
-		return { ...state, success: true };
+		return { ...state, lastPageUpdateSuccess: Date.now() };
+	case RESET_FORM_SUCCESS:
+		return { ...state, success: false };
 	default: return state;
 	}
 }

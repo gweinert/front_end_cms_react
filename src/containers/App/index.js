@@ -6,8 +6,9 @@ import {
 	withRouter,
 } 							from 'react-router-dom';
 import { connect } 			from 'react-redux';
+import { DragDropContext } 	from 'react-dnd';
+import HTML5Backend 		from 'react-dnd-html5-backend';
 import NavBar 				from '../../components/Navbar';
-// import Home 				from '../Home';
 import EditPage 			from '../EditPage';
 import PageTree 			from '../PageTree';
 import {
@@ -73,6 +74,8 @@ const mapStateToProps = (state) => {
 	};
 };
 
-export default withRouter(connect(mapStateToProps)(App));
+const draggableApp = DragDropContext(HTML5Backend)(App);
+
+export default withRouter(connect(mapStateToProps)(draggableApp));
 // export default connect(mapStateToProps)(App);
 

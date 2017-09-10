@@ -1,14 +1,20 @@
 import React, { Component } from 'react';
 import PropTypes 			from 'prop-types';
 import { connect } 			from 'react-redux';
+// import { DragDropContext } 	from 'react-dnd';
+// import HTML5Backend 		from 'react-dnd-html5-backend';
+import DraggablePageItem	from './pageTreeItem';
 import PageButton 			from './pageButton';
 import Modal				from '../../components/Modal/modal';
 import NewPageForm 			from '../../components/Form/newPageForm';
 import {
 	setActivePage,
 	createNewPageSafely,
+	dragPageItem,
+	updatePageSortOrderSafely,
 } 							from '../../actions';
 import './index.css';
+
 
 class PageTree extends Component {
 	static propTypes = {
@@ -31,6 +37,8 @@ class PageTree extends Component {
 		this.onAddNewPageButtonClick = this.onAddNewPageButtonClick.bind(this);
 		this.onNewPageFormSubmit = this.onNewPageFormSubmit.bind(this);
 		this.closeModal = this.closeModal.bind(this);
+		this.movePageItem = this.movePageItem.bind(this);
+		this.dropPageItem = this.dropPageItem.bind(this);
 	}
 
 	componentDidMount() {
@@ -67,6 +75,16 @@ class PageTree extends Component {
 		this.setState({ showModal: false });
 	}
 
+	movePageItem(dragIndex, hoverIndex) {
+		const { dispatch } = this.props;
+		dispatch(dragPageItem(dragIndex, hoverIndex));
+	}
+
+	dropPageItem(pageId, newIndex) {
+		const { dispatch } = this.props;
+		dispatch(updatePageSortOrderSafely(pageId, newIndex));
+	}
+
 	renderPageList(parentId) {
 		const { pages, page, activePage } = this.props;
 		const levelPages = pages.sort((a, b) => a.sortOrder - b.sortOrder)
@@ -79,15 +97,21 @@ class PageTree extends Component {
 
 		return (
 			<ul className={`${childClass} ${activeChild}`}>
-				{levelPages.map(pageItem => (
-					<li key={pageItem.id}>
+				{levelPages.map((pageItem, index) => (
+					<DraggablePageItem
+						key={pageItem.id}
+						index={index}
+						id={pageItem.id}
+						movePageItem={this.movePageItem}
+						dropPageItem={this.dropPageItem}
+					>
 						<PageButton
 							id={pageItem.id}
 							title={pageItem.name}
 							onClick={this.onPageListItemClick}
 						/>
 						{this.renderPageList(pageItem.id)}
-					</li>
+					</DraggablePageItem>
 				))}
 			</ul>
 		);
@@ -127,5 +151,9 @@ const mapStateToProps = (state) => {
 		page,
 	};
 };
+
+// const DragablePageTree = DragDropContext(HTML5Backend)(PageTree);
+// 
+// export default connect(mapStateToProps)(DragablePageTree);
 
 export default connect(mapStateToProps)(PageTree);

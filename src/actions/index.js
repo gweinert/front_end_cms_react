@@ -6,6 +6,8 @@ import {
 	setActivePage,
 	createNewPageSafely,
 	deletePageSafely,
+	dragPageItem,
+	updatePageSortOrderSafely,
 } from './page';
 
 import {
@@ -21,13 +23,19 @@ import {
 	createPageElementGroup,
 	createPageElementsForGroup,
 	savePageElementsForGroup,
-	// deletePageElementsForGroup,
+	deletePageGroupSafely,
+	dragPageElementGroupSlide,
 } from './group';
 
 import {
 	loadForm,
 	onFieldChange,
 } from './form';
+
+import {
+	uploadImageToCloud,
+	deleteImageSafely,
+} from './image';
 
 export {
 	fetchUsersSiteIfNeeded,
@@ -39,8 +47,13 @@ export {
 	createPageElementGroup,
 	createPageElementsForGroup,
 	savePageElementsForGroup,
-	// deletePageElementsForGroup,
+	deletePageGroupSafely,
 	updatePageSafely,
 	loadForm,
 	onFieldChange,
+	uploadImageToCloud,
+	deleteImageSafely,
+	dragPageItem,
+	updatePageSortOrderSafely,
+	dragPageElementGroupSlide,
 };

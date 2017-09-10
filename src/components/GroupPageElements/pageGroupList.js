@@ -1,9 +1,9 @@
 import React, { Component } from 'react';
-import PropTypes from 'prop-types';
-// import GroupElementList from './groupElementList';
+import PropTypes 			from 'prop-types';
+import PageGroup 			from './pageGroup';
 import SlideItem from './slideItem';
 
-// const PageGroupElementList = ({ elements, elementMap, onAddNewGroupItem }) => {
+
 class PageGroupList extends Component {
 	static propTypes = {
 		elementMap: PropTypes.object,
@@ -12,7 +12,6 @@ class PageGroupList extends Component {
 		onDeleteGroupItem: PropTypes.func,
 		onSaveGroupItem: PropTypes.func,
 		pageForm: PropTypes.object,
-		// onInputChange: PropTypes.func,
 	};
 
 	static defaultProps = {
@@ -56,20 +55,25 @@ class PageGroupList extends Component {
 				{groups.map((group, index) => {
 					const groupSlides = groupBy(group.elements, 'groupSortOrder');
 					return (
-						<div className="group" key={group.id}>
+						<div className="group can-delete" id={group.id} key={group.id}>
 							<h2>{group.name}</h2>
-							{Object.keys(groupSlides).map((slideKey, slideIndex) => (
-								<SlideItem
-									key={slideKey}
-									pageForm={pageForm}
-									slide={groupSlides[slideKey]}
-									index={slideIndex}
-									elementMap={elementMap}
-									onDelete={this.onDeleteSlide}
-									onSave={this.onSaveSlide}
-									onFieldChange={this.props.onFieldChange}
-								/>
-							))}
+							{Object.keys(groupSlides)
+								.sort((a, b) => a - b)
+								.map((slideKey, slideIndex) => (
+									<SlideItem
+										groupId={group.id}
+										key={slideKey}
+										pageForm={pageForm}
+										slide={groupSlides[slideKey]}
+										index={slideIndex}
+										elementMap={elementMap}
+										onDelete={this.onDeleteSlide}
+										onSave={this.onSaveSlide}
+										onFieldChange={this.props.onFieldChange}
+										moveSlideItem={this.props.moveSlideItem}									
+									/>
+								))
+							}
 							<button onClick={() => { this.onAddNewGroupItem(group.id); }}>
 								Add New Slide
 							</button>

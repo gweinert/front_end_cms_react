@@ -4,7 +4,7 @@ import PropTypes from 'prop-types';
 const Title = (props) => {
 	return (
 		<div id={props.id} className={props.className}>
-			<label htmlFor="Title">{props.name}
+			<label htmlFor="Title">{props.label}
 				<input
 					id={`${props.id}_input`}
 					value={props.value}

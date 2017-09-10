@@ -4,9 +4,10 @@ import {
 	CREATE_GROUP_FAIL,
 	CREATE_NEW_LOCAL_PAGE_ELEMENTS_FOR_GROUP,
 	UPDATE_LOCAL_PAGE_ELEMENT_GROUP,
-	// REQUEST_DELETE_PAGE_ELEMENTS_SLIDE,
-	// DELETE_PAGE_ELEMENTS_SLIDE_SUCCESS,
-	// DELETE_PAGE_ELEMENTS_SLIDE_FAIL,
+	REQUEST_DELETE_GROUP,
+	DELETE_GROUP_SUCCESS,
+	DELETE_GROUP_FAIL,
+	DRAG_PAGE_ELEMENT_GROUP_SLIDE,
 } from './actionCreators';
 import { POST } from '../api/';
 
@@ -132,7 +133,7 @@ function buildPageGroupElement(structureItem, pageId, index, groupSortOrder, sor
 		type,
 		groupSortOrder,
 		sortOrder,
-		name: `${type}${index}`,
+		name: `${type}${index + 1}`,
 	});
 
 	return defaultElement;
@@ -152,15 +153,6 @@ function updateLocalPageElementsForGroup(updatedElements, slideIndex, activePage
 		pageId: activePageId,
 		slideIndex,
 		data: updatedElements,
-	};
-}
-
-export function savePageElementsForGroup(slideGroup, slideIndex, activePageId) {
-	// find page group elements in local state and update them with form data
-
-	return (dispatch, getState) => {
-		const updatedElements = buildUpdatePageElements(slideGroup, getState());
-		return dispatch(updateLocalPageElementsForGroup(updatedElements, slideIndex, activePageId));
 	};
 }
 
@@ -186,40 +178,61 @@ function buildUpdatePageElements(slideGroup, state) {
 	});
 }
 
-// function requestDeletePageElementsSlide() {
-// 	return {
-// 		type: REQUEST_DELETE_PAGE_ELEMENTS_SLIDE,
-// 	};
-// }
 
-// function deletePageElementsSlideSuccess(payload) {
-// 	return {
-// 		type: DELETE_PAGE_ELEMENTS_SLIDE_SUCCESS,
-// 		payload,
-// 	};
-// }
 
-// function deletePageElementsSlideFail() {
-// 	return {
-// 		type: DELETE_PAGE_ELEMENTS_SLIDE_FAIL,
-// 	};
-// }
+export function savePageElementsForGroup(slideGroup, slideIndex, activePageId) {
+	// find page group elements in local state and update them with form data
 
-// function deletePageElementsSlide(pageElements) {
-// 	const formData = JSON.stringify(pageElements);
-// 	return POST('group/delete-slide', formData, requestDeletePageElementsSlide, deletePageElementsSlideSuccess, deletePageElementsSlideFail);
-// }
+	return (dispatch, getState) => {
+		const updatedElements = buildUpdatePageElements(slideGroup, getState());
+		return dispatch(updateLocalPageElementsForGroup(updatedElements, slideIndex, activePageId));
+	};
+}
 
-// function shouldDeletePageElementsForGroup(state) {
-// 	if (state.site.isDeleting) {
-// 		return false;
-// 	}
-// 	return true;
-// }
-// export function deletePageElementsForGroup(slide, index) {
-// 	return (dispatch, getState) => {
-// 		if (shouldDeletePageElementsForGroup(getState())) {
-// 			dispatch(deletePageElementsSlide(slide));
-// 		}
-// 	};
-// }
+
+function requestDeleteGroup() {
+	return {
+		type: REQUEST_DELETE_GROUP,
+	};
+}
+
+function deleteGroupSuccess(payload) {
+	return {
+		type: DELETE_GROUP_SUCCESS,
+		payload,
+	};
+}
+
+function deleteGroupFail() {
+	return {
+		type: DELETE_GROUP_FAIL,
+	};
+}
+
+function deletePageGroup(groupId) {
+	const formData = JSON.stringify({ groupId });
+	return POST('/group/delete', formData, requestDeleteGroup, deleteGroupSuccess, deleteGroupFail);
+}
+
+function shouldDeletePageGroup(state) {
+	if (state.site.isDeleting) {
+		return false;
+	}
+	return true;
+}
+
+export function deletePageGroupSafely(elsToDelete, groupId) {
+	return (dispatch, getState) => {
+		if (shouldDeletePageGroup(getState())) {
+			return dispatch(deletePageGroup(elsToDelete, groupId));
+		}
+	};
+}
+
+export function dragPageElementGroupSlide(dragIndex, hoverIndex, groupId) {
+	const payload = { dragIndex, hoverIndex, groupId };
+	return {
+		type: DRAG_PAGE_ELEMENT_GROUP_SLIDE,
+		payload,
+	};
+}

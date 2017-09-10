@@ -40,7 +40,8 @@ function buildPageElement(type, activePage) {
 	defaultElement.id = tempId;
 	defaultElement.pageId = activePage.id;
 	defaultElement.sortOrder = normalElements.length;
-	defaultElement.name = `${type}${tempId}`;
+	// defaultElement.name = `${type}${tempId}`;
+	defaultElement.name = `${type}${numberOfSamePageElements}`;
 	defaultElement.type = type;
 
 	return defaultElement;

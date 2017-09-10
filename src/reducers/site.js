@@ -1,3 +1,4 @@
+import update from 'react/lib/update';
 import {
 	REQUEST_USERS_SITE,
 	RECEIVE_USERS_SITE_SUCCESS,
@@ -19,6 +20,20 @@ import {
 	CREATE_NEW_LOCAL_PAGE_ELEMENTS_FOR_GROUP,
 	SET_ACTIVE_PAGE,
 	UPDATE_PAGE_SUCCESS,
+	REQUEST_DELETE_GROUP,
+	DELETE_GROUP_SUCCESS,
+	DELETE_GROUP_FAIL,
+	REQUEST_IMAGE_UPLOAD,
+	IMAGE_UPLOAD_SUCCESS,
+	IMAGE_UPLOAD_FAIL,
+	REQUEST_IMAGE_DELETE,
+	DELETE_IMAGE_SUCCESS,
+	DELETE_IMAGE_FAIL,
+	DRAG_PAGE_ITEM,
+	REQUEST_UPDATE_PAGE_SORT_ORDER,
+	UPDATE_PAGE_SORT_ORDER_SUCCESS,
+	UPDATE_PAGE_SORT_ORDER_FAIL,
+	DRAG_PAGE_ELEMENT_GROUP_SLIDE,
 } from '../actions/actionCreators';
 
 
@@ -30,6 +45,8 @@ export default function site(
 		data: null,
 		error: null,
 		activePageId: null,
+		imageIsUploading: false,
+		isUpdatingPageSortOrder: false,
 	},
 	action) {
 	switch (action.type) {
@@ -154,6 +171,177 @@ export default function site(
 												:
 												el
 										)),
+									}
+									:
+									group
+							)),
+						}
+						:
+						page
+				)),
+			},
+		};
+	case REQUEST_DELETE_GROUP:
+		return { ...state, isDeleting: true };
+	case DELETE_GROUP_SUCCESS:
+		return {
+			...state,
+			isDeleting: false,
+			data: {
+				...state.data,
+				pages: state.data.pages.map(page => (
+					page.id === state.activePageId ?
+						{
+							...page,
+							elements: page.elements.filter(el => el.groupId !== action.payload.groupId),
+							groups: page.groups.filter(group => group.id !== action.payload.groupId),
+						}
+						:
+						page
+				)),
+			},
+		};
+	case DELETE_GROUP_FAIL:
+		return { ...state, isDeleting: false };
+	case REQUEST_IMAGE_UPLOAD:
+		return { ...state, imageIsUploading: true };
+	case IMAGE_UPLOAD_SUCCESS:
+		return {
+			...state,
+			data: {
+				...state.data,
+				pages: state.data.pages.map(page => (
+					page.id === state.activePageId ?
+						{
+							...page,
+							elements: page.elements.map(el => (
+								(el.id === action.payload.elementId) ||
+								(el.id === action.payload.tempId) ?
+									{
+										...el,
+										id: action.payload.elementId,
+										imageURL: action.payload.imageURL,
+									}
+									:
+									el
+							)),
+							groups: page.groups.map(group => (
+								group.id === action.payload.groupId ?
+									{
+										...group,
+										elements: group.elements.map(el => (
+											el.id === action.payload.elementId ?
+												{
+													...el,
+													imageURL: action.payload.imageURL,
+												}
+												:
+												el
+										)),
+									}
+									:
+									group
+							)),
+						}
+						:
+						page
+				)),
+			},
+		};
+	case IMAGE_UPLOAD_FAIL:
+		return { ...state, imageIsUploading: false };
+	case REQUEST_IMAGE_DELETE:
+		return { ...state, isDeleting: true };
+	case DELETE_IMAGE_SUCCESS:
+		return {
+			...state,
+			data: {
+				...state.data,
+				pages: state.data.pages.map(page => (
+					page.id === state.activePageId ?
+						{
+							...page,
+							elements: page.elements.filter(el => el.id !== action.payload.id),
+						}
+						:
+						page
+				)),
+			},
+		};
+	case DELETE_IMAGE_FAIL:
+		return { ...state, isDeleting: false };
+	case DRAG_PAGE_ITEM:
+		return {
+			...state,
+			data: {
+				...state.data,
+				pages: state.data.pages.map((page) => {
+					if (page.sortOrder === action.payload.dragIndex) {
+						return {
+							...page,
+							sortOrder: action.payload.hoverIndex,
+						};
+					} else if (page.sortOrder === action.payload.hoverIndex) {
+						return {
+							...page,
+							sortOrder: action.payload.dragIndex,
+						};
+					}
+					return page;
+				}),
+			},
+		};
+	case REQUEST_UPDATE_PAGE_SORT_ORDER:
+		return { ...state, isUpdatingPageSortOrder: true };
+	case UPDATE_PAGE_SORT_ORDER_SUCCESS:
+		return { ...state, isUpdatingPageSortOrder: false };
+	case UPDATE_PAGE_SORT_ORDER_FAIL:
+		return { ...state, isUpdatingPageSortOrder: false };
+	case DRAG_PAGE_ELEMENT_GROUP_SLIDE:
+		return {
+			...state,
+			data: {
+				...state.data,
+				pages: state.data.pages.map(page => (
+					page.id === state.activePageId ?
+						{
+							...page,
+
+							elements: page.elements.map((el) => {
+								if ((el.groupId === action.payload.groupId) &&
+								(el.groupSortOrder === action.payload.dragIndex)) {
+									return {
+										...el,
+										groupSortOrder: action.payload.hoverIndex,
+									};
+								} else if ((el.groupId === action.payload.groupId) &&
+								(el.groupSortOrder === action.payload.hoverIndex)) {
+									return {
+										...el,
+										groupSortOrder: action.payload.dragIndex,
+									};
+								}
+								return el;
+							}),
+
+							groups: page.groups.map(group => (
+								group.id === action.payload.groupId ?
+									{
+										...group,
+										elements: group.elements.map((el) => {
+											if (el.groupSortOrder === action.payload.dragIndex) {
+												return {
+													...el,
+													groupSortOrder: action.payload.hoverIndex,
+												};
+											} else if (el.groupSortOrder === action.payload.hoverIndex) {
+												return {
+													...el,
+													groupSortOrder: action.payload.dragIndex,
+												};
+											}
+											return el;
+										}),
 									}
 									:
 									group

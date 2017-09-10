@@ -4,6 +4,7 @@ import { connect } 			from 'react-redux';
 import {
 	loadForm,
 	onFieldChange,
+	dragPageElementGroupSlide,
 } 							from '../../actions';
 import Field 				from '../../components/ReduxFields/field';
 import PageGroupList 		from '../../components/GroupPageElements/pageGroupList';
@@ -36,15 +37,16 @@ class PageForm extends Component {
 		super(props);
 		this.onSubmit = this.onSubmit.bind(this);
 		this.handleFieldChange = this.handleFieldChange.bind(this);
+		this.moveSlideItem = this.moveSlideItem.bind(this);
 	}
 
 	componentWillMount() {
 		this.buildFormState();
 	}
 
-	componentWillReceiveProps(nextProps) {
-		if (!this.props.form.success && nextProps.form.success) {
-			this.buildFormState(nextProps);
+	componentDidUpdate(prevProps) {
+		if (this.props.form.lastPageUpdateSuccess !== prevProps.form.lastPageUpdateSuccess) {
+			this.buildFormState();
 		}
 	}
 
@@ -62,23 +64,17 @@ class PageForm extends Component {
 
 	buildFormState(nextProps) {
 		const { dispatch } = this.props;
-		const data = {};
-		const activePage = nextProps ? nextProps.activePage : this.props.activePage;
-
-		activePage.elements.forEach((el) => {
-			const key = `${el.type}[${el.id}]`;
-			data[key] = el.body;
-		});
-
-		data.name = activePage.name;
-		data.path = activePage.path;
-
-		dispatch(loadForm(data, activePage.id));
+		dispatch(loadForm(nextProps));
 	}
 
 	handleFieldChange(fieldInfo) {
 		const { activePage, dispatch } = this.props;
 		dispatch(onFieldChange(fieldInfo, activePage.id));
+	}
+
+	moveSlideItem(dragIndex, hoverIndex, groupId) {
+		const { dispatch } = this.props;
+		dispatch(dragPageElementGroupSlide(dragIndex, hoverIndex, groupId));
 	}
 
 	render() {
@@ -117,12 +113,17 @@ class PageForm extends Component {
 				{activePage.elements.filter(el => el.groupId === 0)
 					.map((el, index) => {
 						const InputComponent = elementMap[el.type.toLowerCase()];
+						const label = el.name;
 						const nameKey = `${el.type}[${el.id}]`;
 						const value = pageForm && pageForm[nameKey] ? pageForm[nameKey] : '';
+						const isImage = el.type.toLowerCase() === 'image' ? 'is-image' : '';
+						
 						return (
 							<Field
 								{...el}
+								className={`can-delete ${isImage}`}
 								value={value}
+								label={label}
 								onFieldChange={this.handleFieldChange}
 								key={nameKey}
 								name={nameKey}
@@ -139,6 +140,7 @@ class PageForm extends Component {
 					onDeleteGroupItem={this.props.onDeleteGroupItem}
 					onSaveGroupItem={this.props.onSaveGroupItem}
 					onFieldChange={this.handleFieldChange}
+					moveSlideItem={this.moveSlideItem}
 				/>
 				<input
 					onClick={this.onSubmit}
@@ -156,7 +158,7 @@ const mapStateToProps = (state) => {
 	return {
 		form,
 	};
-}
+};
 
 export default connect(mapStateToProps)(PageForm);
 
