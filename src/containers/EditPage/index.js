@@ -18,8 +18,10 @@ import {
 	deletePageElementsWithId,
 	deletePageGroupSafely,
 	deletePageSafely,
-	deleteImageSafely,
+	deleteImagesSafely,
+	publishSiteSafely,
 } 							from '../../actions/';
+import './editPage.css';
 
 const PAGE_ELEMENT_TYPES = [
 	'title',
@@ -30,7 +32,7 @@ const PAGE_ELEMENT_TYPES = [
 
 const contextMenuOptions = {
 	menu: {
-		'Add New Element': PAGE_ELEMENT_TYPES,
+		'Add New Element >': PAGE_ELEMENT_TYPES,
 		'Save As Template': [],
 		'Add New Group': [],
 		'Delete Page Element': [],
@@ -71,6 +73,7 @@ class EditPage extends Component {
 		this.handleSaveGroupItem 	= this.handleSaveGroupItem.bind(this);
 		this.toggleModal 			= this.toggleModal.bind(this);
 		this.onDeletePageClick 		= this.onDeletePageClick.bind(this);
+		this.onPublishClick			= this.onPublishClick.bind(this);
 	}
 
 	onContextMenuClick(contextMenuListItem, eventTarget) {
@@ -103,6 +106,12 @@ class EditPage extends Component {
 		}
 	}
 
+	onPublishClick() {
+		const { dispatch } = this.props;
+
+		dispatch(publishSiteSafely());
+	}
+
 	showNewGroupForm() {
 		this.setState({
 			showModal: true,
@@ -118,6 +127,7 @@ class EditPage extends Component {
 		let groupId;
 		let validGroupId;
 		const elIdsToDelete = [];
+		let imageURLToDelete;
 
 		// find the input element with the id
 		if (validNodeElement) {
@@ -148,17 +158,36 @@ class EditPage extends Component {
 		}
 
 		if (isImage(validNodeElement || targetNode)) {
-			dispatch(deleteImageSafely(elementToDeleteId));
-		}
-		
-		if (elIdsToDelete.length) {
-			dispatch(deletePageElementsWithId(elIdsToDelete, groupId));
+			imageURLToDelete = this.getImageURLFromElementId(elementToDeleteId);
 		}
 
+		if (elIdsToDelete.length) {
+			dispatch(deletePageElementsWithId(elIdsToDelete, groupId))
+				.then(() => {
+					if (imageURLToDelete) {
+						dispatch(deleteImagesSafely(elIdsToDelete, [imageURLToDelete]));
+					}
+				});
+		}
 
 		if (validGroupId) {
-			dispatch(deletePageGroupSafely(groupId));
+			dispatch(deletePageGroupSafely(groupId))
+				.then(() => {
+					const groupImageURLs = [];
+					activePage.elements.forEach((el) => {
+						if (el.groupId === groupId && el.imageURL !== '') {
+							groupImageURLs.push(el.imageURL);
+						}
+					});
+					dispatch(deleteImagesSafely(elIdsToDelete, groupImageURLs));
+				});
 		}
+	}
+
+	getImageURLFromElementId(elementId) {
+		const { activePage } = this.props;
+		const imageElement = activePage.elements.find(el => el.id === parseInt(elementId, 10));
+		return imageElement.imageURL;
 	}
 
 	handleNewGroupItem(groupId) {
@@ -169,8 +198,22 @@ class EditPage extends Component {
 
 	handleDeleteGroupItem(slide, index) {
 		const { dispatch } = this.props;
-		const ids = slide.map(el => (el.id[0] !== '_' ? parseInt(el.id, 10) : el.id));
-		dispatch(deletePageElementsWithId(ids, slide[0].groupId));
+		const imageURLs = [];
+		const ids = slide.map((el) => {
+			if (el.imageURL !== '') {
+				imageURLs.push(el.imageURL);
+			}
+			if (el.id[0] !== '_') {
+				return parseInt(el.id, 10);
+			}
+			return el.id;
+		});
+		dispatch(deletePageElementsWithId(ids, slide[0].groupId))
+			.then(() => {
+				if (imageURLs.length) {
+					dispatch(deleteImagesSafely(ids, imageURLs));
+				}
+			});
 	}
 
 	handleSaveGroupItem(slide, index) {
@@ -207,7 +250,7 @@ class EditPage extends Component {
 
 		if (activePage) {
 			return (
-				<div>
+				<div className="edit-page">
 					<h1>{activePage.name}</h1>
 					<PageForm
 						key={activePage.id}
@@ -220,11 +263,13 @@ class EditPage extends Component {
 						onSaveGroupItem={this.handleSaveGroupItem}
 					/>
 					<button
-						onClick={this.openNewElementModal}
+						className="button button-mobile-large"
+						onClick={this.onPublishClick}
 					>
-						Add New Element
+						PUBLISH
 					</button>
 					<button
+						className="button button-outline delete-button button-mobile-large"
 						onClick={this.onDeletePageClick}
 					>
 						DELETE PAGE
@@ -248,10 +293,11 @@ class EditPage extends Component {
 }
 
 const mapStateToProps = (state) => {
-	const { page } = state;
+	const { page, user } = state;
 
 	return {
 		page,
+		user,
 	};
 };
 

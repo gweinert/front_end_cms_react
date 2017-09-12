@@ -3,11 +3,13 @@ import { combineReducers } 	from 'redux';
 import form from './form';
 import site 				from './site';
 import page 				from './page';
+import user 				from './user';
 
 const appReducer = combineReducers({
 	site,
 	form,
 	page,
+	user,
 });
 
 export default appReducer;

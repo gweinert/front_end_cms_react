@@ -96,57 +96,62 @@ class PageForm extends Component {
 				method={method}
 				onSubmit={this.onSubmit}
 			>
-				<Field
-					name="name"
-					component="input"
-					type="text"
-					value={pageNameVal}
-					onFieldChange={this.handleFieldChange}
-				/>
-				<Field
-					name="path"
-					component="input"
-					type="text"
-					value={pagePathVal}
-					onFieldChange={this.handleFieldChange}
-				/>
-				{activePage.elements.filter(el => el.groupId === 0)
-					.map((el, index) => {
-						const InputComponent = elementMap[el.type.toLowerCase()];
-						const label = el.name;
-						const nameKey = `${el.type}[${el.id}]`;
-						const value = pageForm && pageForm[nameKey] ? pageForm[nameKey] : '';
-						const isImage = el.type.toLowerCase() === 'image' ? 'is-image' : '';
-						
-						return (
-							<Field
-								{...el}
-								className={`can-delete ${isImage}`}
-								value={value}
-								label={label}
-								onFieldChange={this.handleFieldChange}
-								key={nameKey}
-								name={nameKey}
-								component={InputComponent}
-							/>
-						);
-					})
-				}
-				<PageGroupList
-					pageForm={pageForm}
-					groups={activePage.groups}
-					elementMap={elementMap}
-					onAddNewGroupItem={this.props.onAddNewGroupItem}
-					onDeleteGroupItem={this.props.onDeleteGroupItem}
-					onSaveGroupItem={this.props.onSaveGroupItem}
-					onFieldChange={this.handleFieldChange}
-					moveSlideItem={this.moveSlideItem}
-				/>
-				<input
-					onClick={this.onSubmit}
-					type="submit"
-					value="Submit"
-				/>
+				<fieldset>
+					<Field
+						label="Page Name"
+						name="name"
+						component="input"
+						type="text"
+						value={pageNameVal}
+						onFieldChange={this.handleFieldChange}
+					/>
+					<Field
+						label="Page Path"
+						name="path"
+						component="input"
+						type="text"
+						value={pagePathVal}
+						onFieldChange={this.handleFieldChange}
+					/>
+					{activePage.elements.filter(el => el.groupId === 0)
+						.map((el, index) => {
+							const InputComponent = elementMap[el.type.toLowerCase()];
+							const label = el.name;
+							const nameKey = `${el.type}[${el.id}]`;
+							const value = pageForm && pageForm[nameKey] ? pageForm[nameKey] : '';
+							const isImage = el.type.toLowerCase() === 'image' ? 'is-image' : '';
+
+							return (
+								<Field
+									{...el}
+									className={`can-delete ${isImage}`}
+									value={value}
+									label={label}
+									onFieldChange={this.handleFieldChange}
+									key={nameKey}
+									name={nameKey}
+									component={InputComponent}
+								/>
+							);
+						})
+					}
+					<PageGroupList
+						pageForm={pageForm}
+						groups={activePage.groups}
+						elementMap={elementMap}
+						onAddNewGroupItem={this.props.onAddNewGroupItem}
+						onDeleteGroupItem={this.props.onDeleteGroupItem}
+						onSaveGroupItem={this.props.onSaveGroupItem}
+						onFieldChange={this.handleFieldChange}
+						moveSlideItem={this.moveSlideItem}
+					/>
+					<input
+						className="submit button-mobile-large"
+						onClick={this.onSubmit}
+						type="submit"
+						value="Save"
+					/>
+				</fieldset>
 			</form>
 		);
 	}

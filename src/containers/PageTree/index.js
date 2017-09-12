@@ -126,6 +126,7 @@ class PageTree extends Component {
 				<h2>Pages</h2>
 				{this.renderPageList(topLevel)}
 				<button
+					className="button button-outline add-new"
 					onClick={this.onAddNewPageButtonClick}
 				>
 					Add New Page

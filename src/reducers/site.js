@@ -1,4 +1,3 @@
-import update from 'react/lib/update';
 import {
 	REQUEST_USERS_SITE,
 	RECEIVE_USERS_SITE_SUCCESS,
@@ -114,7 +113,15 @@ export default function site(
 			isDeleting: false,
 			data: {
 				...state.data,
-				pages: state.data.pages.filter(page => page.id !== action.payload.id) },
+				pages: state.data.pages.map(page => (
+					page.parentId === action.payload.parentId && page.sortOrder > action.payload.sortOrder ?
+						{
+							...page,
+							sortOrder: page.sortOrder - 1,
+						}
+						:
+						page
+				)).filter(page => page.id !== action.payload.id) },
 		};
 	case DELETE_PAGE_FAIL:
 		return { ...state, isDeleting: false };
@@ -155,9 +162,11 @@ export default function site(
 						{
 							...page,
 							elements: page.elements.map(el => (
-								(el.groupSortOrder === action.slideIndex) &&
-								(el.groupId === action.data[0].groupId) ?
-									action.data.find(actionPe => actionPe.id === el.id)
+								((el.groupSortOrder === action.slideIndex) &&
+								(el.groupId === action.data[0].groupId)) ?
+									action.data.find(actionPe =>
+										(actionPe.groupSortOrder === el.groupSortOrder) &&
+										(actionPe.sortOrder === el.sortOrder))
 									:
 									el
 							)),
@@ -230,9 +239,11 @@ export default function site(
 									{
 										...group,
 										elements: group.elements.map(el => (
-											el.id === action.payload.elementId ?
+											(el.id === action.payload.elementId) ||
+											(el.id === action.payload.tempId) ?
 												{
 													...el,
+													id: action.payload.elementId,
 													imageURL: action.payload.imageURL,
 												}
 												:
@@ -252,22 +263,24 @@ export default function site(
 		return { ...state, imageIsUploading: false };
 	case REQUEST_IMAGE_DELETE:
 		return { ...state, isDeleting: true };
+	// case DELETE_IMAGE_SUCCESS:
+	// 	return {
+	// 		...state,
+	// 		data: {
+	// 			...state.data,
+	// 			pages: state.data.pages.map(page => (
+	// 				page.id === state.activePageId ?
+	// 					{
+	// 						...page,
+	// 						elements: page.elements.filter(el => el.id !== action.payload.id),
+	// 					}
+	// 					:
+	// 					page
+	// 			)),
+	// 		},
+	// 	};
 	case DELETE_IMAGE_SUCCESS:
-		return {
-			...state,
-			data: {
-				...state.data,
-				pages: state.data.pages.map(page => (
-					page.id === state.activePageId ?
-						{
-							...page,
-							elements: page.elements.filter(el => el.id !== action.payload.id),
-						}
-						:
-						page
-				)),
-			},
-		};
+		return { ...state, isDeleting: false };
 	case DELETE_IMAGE_FAIL:
 		return { ...state, isDeleting: false };
 	case DRAG_PAGE_ITEM:
@@ -447,12 +460,30 @@ function removePageElements(state, action) {
 			page.id === state.activePageId ?
 				{
 					...page,
-					elements: page.elements.filter(el => ids.indexOf(el.id) < 0),
+					elements: page.elements.map(el => (
+						el.groupId === action.payload.groupId &&
+						el.groupSortOrder > action.payload.groupSortOrder ?
+							{
+								...el,
+								groupSortOrder: el.groupSortOrder - 1,
+							}
+							:
+							el
+					)).filter(el => ids.indexOf(el.id) < 0),
 					groups: page.groups.map(group => (
 						group.id === action.payload.groupId ?
 							{
 								...group,
-								elements: group.elements.filter(el => ids.indexOf(el.id) < 0),
+								elements: group.elements.map(el => (
+									el.groupId === action.payload.groupId &&
+									el.groupSortOrder > action.payload.groupSortOrder ?
+										{
+											...el,
+											groupSortOrder: el.groupSortOrder - 1,
+										}
+										:
+										el
+								)).filter(el => ids.indexOf(el.id) < 0),
 							}
 							:
 							group

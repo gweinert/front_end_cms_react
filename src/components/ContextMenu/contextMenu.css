@@ -7,7 +7,6 @@
 	display: none;
 	background-color: #fff;
 	border: 1px solid #000;
-	border-bottom: none;
 }
 
 .menu.show {
@@ -16,18 +15,48 @@
 
 .menu .main-menu {
 	position: relative;
+	box-shadow: -5px 4px 16px -5px rgba(0,0,0,0.75);
+	
 }
 
 .menu .sub-menu {
 	left: 100%;
-	top: 0;
+	border-radius: 5px;
+	top: -1px;
+	display: none;
+	box-shadow: -5px 4px 10px -5px rgba(0,0,0,0.75);
 }
 
 .menu li {
 	border-bottom: 1px solid #000;
+	margin: 0!important;
 	cursor: pointer;
+	padding: 1px;
+}
+
+.menu li:last-child {
+	border: 0;
+}
+
+.menu li:hover {
+	background-color: #e0e0e0;
+}
+
+.menu li:hover > button {
+	background-color: #e0e0e0;	
 }
 
 .menu li:hover .sub-menu {
 	display: inline-block;
+}
+
+.menu button {
+	margin: 0!important;
+	background-color: #fff;
+	color: #000;
+	border: 0;
+	border-radius: 0;
+	text-transform: none;
+	text-align: left;
+	padding: 0 3.0rem 0 10px;
 }

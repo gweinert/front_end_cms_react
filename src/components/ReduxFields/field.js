@@ -8,11 +8,13 @@ class Field extends Component {
 		onFieldChange: PropTypes.func.isRequired,
 		name: PropTypes.string.isRequired,
 		value: PropTypes.string,
+		label: PropTypes.string,
 	}
 
 	static defaultProps = {
 		component: 'input',
 		value: '',
+		label: '',
 	}
 
 	constructor(props) {
@@ -38,12 +40,14 @@ class Field extends Component {
 	}
 
 	render() {
-		const { component, value, className } = this.props;
+		const { component, value, className, label, name } = this.props;
 		const WrappedComponent = component;
+		const labelVal = label || name;
 		switch (component) {
 		case 'input':
 			return (
 				<Input
+					label={labelVal}
 					className="field"
 					onChange={this.onChange}
 					value={value}

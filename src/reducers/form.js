@@ -3,6 +3,7 @@ import {
 	ON_FIELD_CHANGE,
 	UPDATE_PAGE_SUCCESS,
 	RESET_FORM_SUCCESS,
+	IMAGE_UPLOAD_SUCCESS,
 } from '../actions/actionCreators';
 
 export default function form(
@@ -30,7 +31,9 @@ export default function form(
 			},
 		};
 	case UPDATE_PAGE_SUCCESS:
-		return { ...state, lastPageUpdateSuccess: Date.now() };
+		return { ...state, lastPageUpdateSuccess: Date.now() }; // reload the form
+	// case IMAGE_UPLOAD_SUCCESS:
+		// return { ...state, lastPageUpdateSuccess: Date.now() }; // reload the form
 	case RESET_FORM_SUCCESS:
 		return { ...state, success: false };
 	default: return state;

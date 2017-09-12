@@ -80,6 +80,7 @@ function withContextMenu(WrappedComponent, contextMenuOptions) {
 		}
 
 		render() {
+			const { user } = this.props;
 			const { menu } = contextMenuOptions;
 			const { mousePosition, show } = this.state;
 			const positionStyle = {
@@ -88,24 +89,37 @@ function withContextMenu(WrappedComponent, contextMenuOptions) {
 			};
 			const showMenu = show ? 'show' : '';
 
-			return (
-				<div
-					className="with-context-menu"
-					ref={(contextMenu) => { this.contextMenu = contextMenu; }}
-				>
-					<WrappedComponent
-						ref={(wc) => { this.wc = wc; }}
-						{...this.props}
-					/>
-					<div
-						className={`menu ${showMenu}`}
-						style={positionStyle}
-					>
-						{this.renderMenuList(menu)}
-					</div>
+			console.log("props", this.props);
+			const isDeveloper = user.data.level === 1 ? true : false;
 
-				</div>
-			);
+			// only allow access to context menu if dev
+			if (isDeveloper) {
+				return (
+					<div
+						className="with-context-menu"
+						ref={(contextMenu) => { this.contextMenu = contextMenu; }}
+					>
+						<WrappedComponent
+							ref={(wc) => { this.wc = wc; }}
+							{...this.props}
+						/>
+						<div
+							className={`menu ${showMenu}`}
+							style={positionStyle}
+						>
+							{this.renderMenuList(menu)}
+						</div>
+
+					</div>
+				);
+			}
+
+			return (
+				<WrappedComponent
+					//ref={(wc) => { this.wc = wc; }}
+					{...this.props}
+				/>
+			)
 		}
 	};
 }

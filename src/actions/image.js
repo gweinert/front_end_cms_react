@@ -66,8 +66,8 @@ function deleteImageFail() {
 	};
 }
 
-function deleteImageFromCloud(id, imageURL) {
-	const formData = JSON.stringify({ id, imageURL });
+function deleteImageFromCloud(ids, imageURLs) {
+	const formData = JSON.stringify({ ids, imageURLs });
 	return POST('image/delete', formData, requestDeleteImage, deleteImageSuccess, deleteImageFail);
 }
 
@@ -78,19 +78,19 @@ function shouldDeleteImage(state) {
 	return true;
 }
 
-export function deleteImageSafely(elementId) {
+export function deleteImagesSafely(elementIds, imageURLs) {
 	return (dispatch, getState) => {
 		if (shouldDeleteImage(getState())) {
-			const elementIdInt = parseInt(elementId, 10);
-			const imageURL = getImageURLFromElementId(elementIdInt, getState());
-			return dispatch(deleteImageFromCloud(elementIdInt, imageURL));
+			// const elementIdInt = parseInt(elementId, 10);
+			// const imageURL = getImageURLFromElementId(elementIdInt, getState());
+			return dispatch(deleteImageFromCloud(elementIds, imageURLs));
 		}
 	};
 }
 
-function getImageURLFromElementId(elementId, state) {
-	const pageId = state.page.activePageId;
-	const activePage = state.site.data.pages.find(page => page.id === pageId);
-	const imageElement = activePage.elements.find(el => el.id === elementId);
-	return imageElement.imageURL;
-}
+// function getImageURLFromElementId(elementId, state) {
+// 	const pageId = state.page.activePageId;
+// 	const activePage = state.site.data.pages.find(page => page.id === pageId);
+// 	const imageElement = activePage.elements.find(el => el.id === elementId);
+// 	return imageElement.imageURL;
+// }

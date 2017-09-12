@@ -3,11 +3,12 @@ import PropTypes from 'prop-types';
 
 const Input = props => (
 	<div id={props.id} className={props.className}>
-		<label htmlFor={props.name}>{props.name}
+		<label htmlFor={props.name}>{props.label}
 			<input
 				id={`${props.id}_input`}
 				value={props.value}
 				onChange={props.onChange}
+				type="text"
 				{...props.input}
 			/>
 			{props.meta && props.meta.touched && props.meta.error &&

@@ -1,8 +1,14 @@
 .page-tree {
 	width: 30%;
-	/* height: 100%; */
 	height: calc(100vh - 53px);
-	border: 1px solid green;
+}
+
+.page-tree h2 {
+	padding: 0 10px;
+}
+
+.page-tree .add-new {
+	margin: 0 10px;
 }
 
 .child-page-list {
@@ -13,4 +19,11 @@
 .child-page-list.active {
 	/* height: 30px; */
 	height: auto;
+}
+
+@media (max-width: 768px) {
+	.page-tree {
+		width: 100%;
+		height: auto;
+	}
 }

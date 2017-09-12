@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import PropTypes 			from 'prop-types';
 import PageGroup 			from './pageGroup';
-import SlideItem from './slideItem';
+import SlideItem 			from './slideItem';
 
 
 class PageGroupList extends Component {
@@ -74,7 +74,10 @@ class PageGroupList extends Component {
 									/>
 								))
 							}
-							<button onClick={() => { this.onAddNewGroupItem(group.id); }}>
+							<button
+								className="button button-outline"
+								onClick={() => { this.onAddNewGroupItem(group.id); }}
+							>
 								Add New Slide
 							</button>
 						</div>

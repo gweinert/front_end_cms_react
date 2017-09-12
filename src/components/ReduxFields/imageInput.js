@@ -72,13 +72,17 @@ class ImageInput extends Component {
 			meta,
 		} = this.props;
 
-		console.log("imageinput", this.props, imageURL);
+		const imgStyle = { backgroundImage: `url('${imageURL}')` };
 
 		return (
 			<div id={id} className={className}>
 				<label htmlFor="ImageInput">{label}
 					{imageURL ?
-						<img src={imageURL} width="50" height="50" alt={imageURL} />
+						<div
+							className="img"
+							style={imgStyle}
+							alt={imageURL}
+						/>
 						:
 						<div>
 							<input

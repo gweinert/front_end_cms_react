@@ -9,6 +9,7 @@ const Title = (props) => {
 					id={`${props.id}_input`}
 					value={props.value}
 					onChange={props.onChange}
+					type="text"
 					{...props.input}
 				/>
 				{props.meta && props.meta.touched && props.meta.error &&

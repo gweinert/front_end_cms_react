@@ -34,8 +34,17 @@ import {
 
 import {
 	uploadImageToCloud,
-	deleteImageSafely,
+	deleteImagesSafely,
 } from './image';
+
+import {
+	login,
+	getUser,
+} from './user';
+
+import {
+	publishSiteSafely,
+} from './site';
 
 export {
 	fetchUsersSiteIfNeeded,
@@ -52,8 +61,11 @@ export {
 	loadForm,
 	onFieldChange,
 	uploadImageToCloud,
-	deleteImageSafely,
+	deleteImagesSafely,
 	dragPageItem,
 	updatePageSortOrderSafely,
 	dragPageElementGroupSlide,
+	login,
+	getUser,
+	publishSiteSafely,
 };

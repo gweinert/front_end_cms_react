@@ -9,9 +9,10 @@ import './slideItem.css';
 
 const style = {
 	border: '1px dashed gray',
-	padding: '0.5rem 1rem',
+	borderRadius: '5px',
+	padding: '10px',
 	marginBottom: '.5rem',
-	backgroundColor: 'white',
+	backgroundColor: '#eeeeee',
 	cursor: 'move',
 };
 
@@ -159,49 +160,64 @@ class SlideItem extends Component {
 		// return (
 			<div style={{ ...style, opacity }}>
 				<div className={`slide ${showEdit}`}>
-					<h2>Slide {index + 1}</h2>
-					{slide.map((el) => {
-						const InputComponent = elementMap[el.type.toLowerCase()];
-						const nameKey = `${el.type}[${el.id}]`;
-						const value = pageForm ? pageForm[nameKey] : '';
-						const label = el.name;
-						return (
-							<div key={el.id}>
-								{!showEdit && el.type.toLowerCase() === 'title' ?
-									<h4>{el.body || value}</h4> : null
-								}
-								<div className="edit">
-									<Field
-										{...el}
-										label={label}
-										value={value}
-										onFieldChange={this.props.onFieldChange}
-										key={nameKey}
-										name={nameKey}
-										component={InputComponent}
-									/>
+					<div className="info">
+						{slide.map((el) => {
+							const InputComponent = elementMap[el.type.toLowerCase()];
+							const nameKey = `${el.type}[${el.id}]`;
+							const value = pageForm ? pageForm[nameKey] : '';
+							const label = el.name;
+							return (
+								<div key={el.id}>
+									{!showEdit && el.type.toLowerCase() === 'title' ?
+										<h4>{el.body || value}</h4> : null
+									}
+									{!showEdit && el.type.toLowerCase() === 'image' ?
+										<div
+											className="img"
+											style={{ backgroundImage: `url('${el.imageURL}')` }}
+											alt={el.imageURL}
+										/>
+										:
+										null
+									}
+									<div className="edit">
+										<Field
+											{...el}
+											label={label}
+											value={value}
+											onFieldChange={this.props.onFieldChange}
+											key={nameKey}
+											name={nameKey}
+											component={InputComponent}
+										/>
+									</div>
 								</div>
-							</div>
-						);
-					})}
-					<button
-						onClick={this.onDeleteButtonClick}
-					>
-						Delete Slide
-					</button>
-					{!showEdit ?
+							);
+						})}
+					</div>
+					<div className="buttons">
+						{!showEdit ?
+							<button
+								className="button button-outline button-small"
+								onClick={this.onEditButtonClick}
+							>
+								Edit Slide
+							</button>
+							:
+							<button
+								className="button button-outline button-small"
+								onClick={this.onSaveButtonClick}
+							>
+								Save Slide
+							</button>
+						}
 						<button
-							onClick={this.onEditButtonClick}
+							className="button button-outline button-small"
+							onClick={this.onDeleteButtonClick}
 						>
-							Edit Slide
+							Delete Slide
 						</button>
-						:
-						<button
-							onClick={this.onSaveButtonClick}
-						>
-							Save Slide
-						</button>
-					}
+					</div>
 				</div>
 			</div>,
 		));
