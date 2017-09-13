@@ -10,6 +10,25 @@
 	bottom: 10px;
 }
 
+input[type="file"] {
+	max-width: 230px;
+}
+
+.file-input-container {
+	display: flex;
+	flex-direction: row;
+	justify-content: flex-start;
+}
+
+.rdw-editor-wrapper {
+border: 0.1rem solid #d1d1d1;
+border-radius: .4rem;
+}
+
+.rdw-editor-main {
+padding-left: 10px;
+}
+
 @media (max-width: 768px) {
 
 	.edit-page .delete-button {

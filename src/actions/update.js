@@ -46,7 +46,7 @@ export function updatePageSafely(pageForm) {
 			const updatedPage = buildPage(pageForm, getState());
 			return dispatch(updatePage(updatedPage));
 		}
-	}
+	};
 }
 
 function buildPage(state, _state) {
@@ -56,12 +56,17 @@ function buildPage(state, _state) {
 	const form = _state.form.formData[formName];
 	const pageName = form.name || activePage.name;
 	const pagePath = form.path || activePage.path;
+	const pageTemplate = form.template || activePage.template;
+	const pageShowInNav = form.showInNav || activePage.showInNav;
+
 	const updatedElements = buildPageElementsFromForm(activePage.elements, form);
 
 	return {
 		...activePage,
 		name: pageName,
 		path: pagePath,
+		template: pageTemplate,
+		showInNav: JSON.parse(pageShowInNav),
 		elements: updatedElements,
 	};
 }
@@ -81,6 +86,12 @@ function buildPageElementsFromForm(elements, formState) {
 			return { ...el, body: updatedValue };
 		case 'blurb':
 			return { ...el, body: updatedValue };
+		case 'link':
+			return {
+				...el,
+				linkPath: updatedValue.split(':')[0],
+				linkText: updatedValue.split(':')[1],
+			}
 		default: return el;
 		}
 	});

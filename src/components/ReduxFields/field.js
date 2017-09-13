@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import Input from './input';
+import Select from './select';
 
 class Field extends Component {
 	static propTypes = {
@@ -9,12 +10,14 @@ class Field extends Component {
 		name: PropTypes.string.isRequired,
 		value: PropTypes.string,
 		label: PropTypes.string,
+		options: PropTypes.arrayOf(PropTypes.string),
 	}
 
 	static defaultProps = {
 		component: 'input',
 		value: '',
 		label: '',
+		options: [],
 	}
 
 	constructor(props) {
@@ -26,10 +29,15 @@ class Field extends Component {
 		const { name, onFieldChange } = this.props;
 		let value = '';
 
-		if (e.target) {
-			value = e.target.value;
-		} else if (e.type === 'blurb') {
+		switch (e.type) {
+		case 'blurb':
 			value = e.body;
+			break;
+		case 'link':
+			value = `${e.linkPath}:${e.linkText}`;
+			break;
+		default:
+			value = e.target.value;
 		}
 
 		const fieldInfo = {
@@ -40,7 +48,7 @@ class Field extends Component {
 	}
 
 	render() {
-		const { component, value, className, label, name } = this.props;
+		const { component, value, className, label, name, options } = this.props;
 		const WrappedComponent = component;
 		const labelVal = label || name;
 		switch (component) {
@@ -54,6 +62,17 @@ class Field extends Component {
 					{...this.props}
 				/>
 			);
+		case 'select':
+			return (
+				<Select
+					label={labelVal}
+					className="field"
+					onChange={this.onChange}
+					value={value}
+					options={options}
+					{...this.props}
+				/>
+			)
 		default:
 			return (
 				<WrappedComponent

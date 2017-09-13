@@ -1,8 +1,4 @@
 import {
-	fetchUsersSiteIfNeeded,
-} from './fetch';
-
-import {
 	setActivePage,
 	createNewPageSafely,
 	deletePageSafely,
@@ -44,6 +40,7 @@ import {
 
 import {
 	publishSiteSafely,
+	fetchUsersSiteIfNeeded,
 } from './site';
 
 export {

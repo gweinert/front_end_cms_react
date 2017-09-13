@@ -4,6 +4,7 @@ import md5 from 'blueimp-md5';
 import {
 	login,
 } from '../../actions';
+import './login.css';
 
 class Login extends Component {
 	static propTypes = {
@@ -39,7 +40,7 @@ class Login extends Component {
 
 	render() {
 		return (
-			<div>
+			<div className="login">
 				<h2>Login</h2>
 				<form
 					onSubmit={this.onSubmit}
@@ -60,7 +61,9 @@ class Login extends Component {
 							onChange={this.onChange}
 						/>
 					</label>
-					<input type="submit" value="submit" />
+					<div className="button-container">
+						<input type="submit" value="Login" />
+					</div>
 				</form>
 			</div>
 		);

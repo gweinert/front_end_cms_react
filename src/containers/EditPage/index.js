@@ -5,7 +5,7 @@ import Modal				from '../../components/Modal/modal';
 import Title 				from '../../components/ReduxFields/title';
 import Blurb 				from '../../components/ReduxFields/blurb';
 import ImageInput 			from '../../components/ReduxFields/imageInput';
-import LinkInput 			from '../../components/InputControl/linkInput';
+import LinkInput 			from '../../components/ReduxFields/linkInput';
 import withContextMenu 		from '../../components/ContextMenu/contextMenu';
 import PageForm 			from './pageForm';
 import NewGroupForm 		from '../../components/Form/newGroupForm';
@@ -112,10 +112,10 @@ class EditPage extends Component {
 		dispatch(publishSiteSafely());
 	}
 
-	showNewGroupForm() {
-		this.setState({
-			showModal: true,
-		});
+	getImageURLFromElementId(elementId) {
+		const { activePage } = this.props;
+		const imageElement = activePage.elements.find(el => el.id === parseInt(elementId, 10));
+		return imageElement.imageURL;
 	}
 
 	// @ DEV check if group el
@@ -184,10 +184,10 @@ class EditPage extends Component {
 		}
 	}
 
-	getImageURLFromElementId(elementId) {
-		const { activePage } = this.props;
-		const imageElement = activePage.elements.find(el => el.id === parseInt(elementId, 10));
-		return imageElement.imageURL;
+	showNewGroupForm() {
+		this.setState({
+			showModal: true,
+		});
 	}
 
 	handleNewGroupItem(groupId) {

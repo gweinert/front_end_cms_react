@@ -7,7 +7,9 @@ export function GET(url, requestDispatch, successDispatch, errorDispatch) {
 		dispatch(requestDispatch());
 
 		return fetch(`${IP_ADDRESS}/${url}`,
-			{ credentials: 'include' })
+			{
+				credentials: 'include',
+			})
 			.then((res) => {
 				if (res.ok) return res.json();
 				throw new TypeError('Oops, probably a 404!');

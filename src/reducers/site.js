@@ -18,7 +18,9 @@ import {
 	UPDATE_LOCAL_PAGE_ELEMENT_GROUP,
 	CREATE_NEW_LOCAL_PAGE_ELEMENTS_FOR_GROUP,
 	SET_ACTIVE_PAGE,
+	REQUEST_UPDATE_PAGE,
 	UPDATE_PAGE_SUCCESS,
+	UPDATE_PAGE_FAIL,	
 	REQUEST_DELETE_GROUP,
 	DELETE_GROUP_SUCCESS,
 	DELETE_GROUP_FAIL,
@@ -33,6 +35,9 @@ import {
 	UPDATE_PAGE_SORT_ORDER_SUCCESS,
 	UPDATE_PAGE_SORT_ORDER_FAIL,
 	DRAG_PAGE_ELEMENT_GROUP_SLIDE,
+	REQUEST_PUBLISH_SITE,
+	PUBLISH_SITE_SUCCESS,
+	PUBLISH_SITE_FAIL,
 } from '../actions/actionCreators';
 
 
@@ -40,6 +45,7 @@ export default function site(
 	state = {
 		isFetching: false,
 		isPosting: false,
+		isPublishing: false,
 		isDeleting: false,
 		data: null,
 		error: null,
@@ -57,9 +63,13 @@ export default function site(
 		return { ...state, isFetching: false, error: action.payload };
 	case SET_ACTIVE_PAGE:
 		return { ...state, activePageId: action.pageId };
+	case REQUEST_UPDATE_PAGE:
+		return { ...state, isPosting: true, error: null };
 	case UPDATE_PAGE_SUCCESS:
 		return {
 			...state,
+			isPosting: false,
+			error: null,
 			data: {
 				...state.data,
 				pages: state.data.pages.map(page => (
@@ -70,6 +80,14 @@ export default function site(
 				)),
 			},
 		};
+	case UPDATE_PAGE_FAIL:
+		return { ...state, isPosting: false, error: 'Failed to update Page.' };
+	case REQUEST_PUBLISH_SITE:
+		return { ...state, isPublishing: true, error: null };
+	case PUBLISH_SITE_SUCCESS:
+		return { ...state, isPublishing: false, error: null };
+	case PUBLISH_SITE_FAIL:
+		return { ...state, isPublishing: false, error: 'Failed to publish' };
 	case CREATE_NEW_LOCAL_PAGE_ELEMENT:
 		return {
 			...state,

@@ -1,0 +1,23 @@
+.flash {
+	z-index: 1000;
+	position: fixed;
+	top: -100%;
+	left: 0;
+	right: 0;
+	width: 100%;
+	padding: 12px;
+	color: #fff;
+	text-align: center;
+	margin: 0;
+	transition: 0.3s top ease;
+}
+
+.show-success {
+	background-color: #4BB543;
+	top: 0;
+}
+
+.show-error {
+	background-color: #B33A3A;
+	top: 0;
+}

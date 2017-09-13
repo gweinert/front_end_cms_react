@@ -89,6 +89,8 @@ class PageForm extends Component {
 		const pageForm = form.formData[`page[${activePage.id}]`];
 		const pageNameVal = pageForm && pageForm.name ? pageForm.name : '';
 		const pagePathVal = pageForm && pageForm.path ? pageForm.path : '';
+		const pageTemplateVal = pageForm && pageForm.template ? pageForm.template : '';
+		const pageShowInNavVal = pageForm && pageForm.showInNav.toString() !== '' ? pageForm.showInNav : '';
 
 		return (
 			<form
@@ -111,6 +113,22 @@ class PageForm extends Component {
 						component="input"
 						type="text"
 						value={pagePathVal}
+						onFieldChange={this.handleFieldChange}
+					/>
+					<Field
+						label="Page Template"
+						name="template"
+						component="input"
+						type="text"
+						value={pageTemplateVal}
+						onFieldChange={this.handleFieldChange}
+					/>
+					<Field
+						label="Show In Nav"
+						name="showInNav"
+						component="select"
+						options={['true', 'false']}
+						value={pageShowInNavVal.toString()}
 						onFieldChange={this.handleFieldChange}
 					/>
 					{activePage.elements.filter(el => el.groupId === 0)

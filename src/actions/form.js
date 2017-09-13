@@ -45,6 +45,9 @@ function buildFormFromState(state) {
 
 	data.name = activePage.name;
 	data.path = activePage.path;
+	data.template = activePage.template;
+	data.showInNav = activePage.showInNav;
+
 
 	return {
 		data,

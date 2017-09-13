@@ -13,6 +13,7 @@ class ImageInput extends Component {
 		body: PropTypes.string,
 		value: PropTypes.string,
 		className: PropTypes.string,
+		imageURL: PropTypes.string,
 		pageId: PropTypes.number.isRequired,
 		id: PropTypes.oneOfType([PropTypes.number, PropTypes.string]).isRequired,
 		onChange: PropTypes.func.isRequired,
@@ -29,11 +30,21 @@ class ImageInput extends Component {
 
 	constructor(props) {
 		super(props);
+		this.state = {
+			loading: false,
+		};
 		this.handleFile = this.handleFile.bind(this);
+	}
+
+	componentWillReceiveProps(nextProps) {
+		if (nextProps.imageURL && !this.props.imageURL) {
+			this.setState({ loading: false });
+		}
 	}
 
 	handleFile(e) {
 		const { dispatch, id, pageId } = this.props;
+		this.setState({ loading: true });
 		const reader = new FileReader();
 		const file = e.target.files[0];
 
@@ -71,6 +82,7 @@ class ImageInput extends Component {
 			imageURL,
 			meta,
 		} = this.props;
+		const showLoader = this.state.loading ? true : false;
 
 		const imgStyle = { backgroundImage: `url('${imageURL}')` };
 
@@ -84,7 +96,7 @@ class ImageInput extends Component {
 							alt={imageURL}
 						/>
 						:
-						<div>
+						<div className="file-input-container">
 							<input
 								id={`${id}_input`}
 								type="file"
@@ -93,6 +105,7 @@ class ImageInput extends Component {
 								onChange={this.handleFile}
 								// onChange={props.onChange}
 							/>
+							{showLoader && <div className="loader" />}
 							{meta && meta.touched && meta.error &&
 								<span className="error">{meta.error}</span>}
 						</div>
