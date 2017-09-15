@@ -89,7 +89,6 @@ function withContextMenu(WrappedComponent, contextMenuOptions) {
 			};
 			const showMenu = show ? 'show' : '';
 
-			console.log("props", this.props);
 			const isDeveloper = user.data.level === 1 ? true : false;
 
 			// only allow access to context menu if dev

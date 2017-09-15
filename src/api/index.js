@@ -1,6 +1,6 @@
 // const IP_ADDRESS = 'http://192.168.0.189:8080';
-const IP_ADDRESS = 'http://localhost:8080';
-
+// const IP_ADDRESS = 'http://localhost:8080';
+const IP_ADDRESS = 'https://go-cms-tattoo-micro.herokuapp.com';
 
 export function GET(url, requestDispatch, successDispatch, errorDispatch) {
 	return (dispatch) => {
@@ -33,7 +33,6 @@ export function POST(url, formData, requestDispatch, successDispatch, errorDispa
 				body: formData,
 			})
 			.then((res) => {
-				console.log("res", res);
 				if (res.ok) return res.json();
 				throw new TypeError('Oops, probably a 404!');
 			})
@@ -42,7 +41,8 @@ export function POST(url, formData, requestDispatch, successDispatch, errorDispa
 					return dispatch(successDispatch(json));
 				}
 
-				return dispatch(errorDispatch(json));
+				dispatch(errorDispatch(json));
+				throw new TypeError('No success');
 			})
 			.catch((error) => {
 				console.error(error);

@@ -307,16 +307,18 @@ export default function site(
 			data: {
 				...state.data,
 				pages: state.data.pages.map((page) => {
-					if (page.sortOrder === action.payload.dragIndex) {
-						return {
-							...page,
-							sortOrder: action.payload.hoverIndex,
-						};
-					} else if (page.sortOrder === action.payload.hoverIndex) {
-						return {
-							...page,
-							sortOrder: action.payload.dragIndex,
-						};
+					if (page.parentId === action.payload.parentId) {
+						if (page.sortOrder === action.payload.dragIndex) {
+							return {
+								...page,
+								sortOrder: action.payload.hoverIndex,
+							};
+						} else if (page.sortOrder === action.payload.hoverIndex) {
+							return {
+								...page,
+								sortOrder: action.payload.dragIndex,
+							};
+						}
 					}
 					return page;
 				}),
@@ -325,7 +327,10 @@ export default function site(
 	case REQUEST_UPDATE_PAGE_SORT_ORDER:
 		return { ...state, isUpdatingPageSortOrder: true };
 	case UPDATE_PAGE_SORT_ORDER_SUCCESS:
-		return { ...state, isUpdatingPageSortOrder: false };
+		return {
+			...state,
+			isUpdatingPageSortOrder: false,
+		};
 	case UPDATE_PAGE_SORT_ORDER_FAIL:
 		return { ...state, isUpdatingPageSortOrder: false };
 	case DRAG_PAGE_ELEMENT_GROUP_SLIDE:

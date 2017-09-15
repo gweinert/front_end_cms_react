@@ -16,8 +16,8 @@ function requestLogin() {
 }
 
 function loginSuccess(payload) {
+	// Cookie.set('sessionId', payload.sessionId);
 	Cookie.set('sessionId', payload.sessionId);
-	
 	return {
 		type: LOGIN_SUCCESS,
 		payload,

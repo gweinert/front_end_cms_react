@@ -48,8 +48,10 @@ class App extends Component {
 
 		if (Cookie.get('sessionId')) {
 			dispatch(getUser())
-				.then(() => {
-					dispatch(fetchUsersSiteIfNeeded());
+				.then((action) => {
+					if (action.type === 'USER_SESSION_SUCCESS') {
+						dispatch(fetchUsersSiteIfNeeded());
+					}
 				});
 		}
 	}

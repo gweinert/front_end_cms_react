@@ -109,8 +109,6 @@ export function createPageElementsForGroup(groupId, activePage) {
 		group.structure.forEach((structureItem, index) => {
 			for (let i = 0; i < structureItem.amount; i += 1) {
 				const pageId = activePage.id;
-				console.log("el len", group.elements.length);
-				console.log('elperslide', elementsPerSlide);
 				const groupSortOrder = Math.floor(group.elements.length / elementsPerSlide);
 				const newPageGroupElement = buildPageGroupElement(structureItem, pageId, i, groupSortOrder, sortOrder);
 				pageElements.push(newPageGroupElement);

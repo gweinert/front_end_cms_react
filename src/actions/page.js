@@ -114,7 +114,7 @@ function buildNewPage(formData, state) {
 		name,
 		showInNav: true,
 		siteId: data.id,
-		sortOrder: data.pages.length - 1,
+		sortOrder: data.pages.length - 2,
 		template: templateName,
 	};
 
@@ -130,9 +130,9 @@ function slugify(text) {
 		.replace(/-+$/, '');			// Trim - from end of text
 }
 
-export function dragPageItem(dragIndex, hoverIndex) {
+export function dragPageItem(dragIndex, hoverIndex, parentId) {
 
-	const payload = { dragIndex, hoverIndex };
+	const payload = { dragIndex, hoverIndex, parentId };
 
 	return {
 		type: DRAG_PAGE_ITEM,

@@ -21,9 +21,6 @@ class Login extends Component {
 		this.onChange = this.onChange.bind(this);
 	}
 
-	componentDidMount() {
-
-	}
 
 	onSubmit(e) {
 		const { dispatch } = this.props;

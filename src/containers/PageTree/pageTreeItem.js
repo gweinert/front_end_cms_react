@@ -73,7 +73,7 @@ const pageItemTarget = {
 		}
 
 		// Time to actually perform the action
-		props.movePageItem(dragIndex, hoverIndex);
+		props.movePageItem(dragIndex, hoverIndex, props.parentId);
 
 		// Note: we're mutating the monitor item here!
 		// Generally it's better to avoid mutations,

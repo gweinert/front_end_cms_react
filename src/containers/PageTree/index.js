@@ -75,9 +75,9 @@ class PageTree extends Component {
 		this.setState({ showModal: false });
 	}
 
-	movePageItem(dragIndex, hoverIndex) {
+	movePageItem(dragIndex, hoverIndex, parentId) {
 		const { dispatch } = this.props;
-		dispatch(dragPageItem(dragIndex, hoverIndex));
+		dispatch(dragPageItem(dragIndex, hoverIndex, parentId));
 	}
 
 	dropPageItem(pageId, newIndex) {
@@ -102,6 +102,7 @@ class PageTree extends Component {
 						key={pageItem.id}
 						index={index}
 						id={pageItem.id}
+						parentId={pageItem.parentId}
 						movePageItem={this.movePageItem}
 						dropPageItem={this.dropPageItem}
 					>
